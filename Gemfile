@@ -25,6 +25,7 @@ group :development, :test do
   gem "rspec-rails", ">= 2.0.1"
   gem "cucumber-rails", ">= 1.3.0", require: false
   gem "database_cleaner"
+  gem 'factory_girl_rails'
 end
 
 # To use ActiveModel has_secure_password
