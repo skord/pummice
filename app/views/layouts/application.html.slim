@@ -9,8 +9,8 @@ html lang="en"
   body
     p.notice
       - if notice
-        .alert.alert-info notice
+        .alert.alert-info= notice
     p.alert
       - if alert
-        .alert alert
+        .alert= alert
     = yield
