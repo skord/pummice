@@ -7,4 +7,10 @@ html lang="en"
     = csrf_meta_tags
 
   body
+    p.notice
+      - if notice
+        .alert.alert-info notice
+    p.alert
+      - if alert
+        .alert alert
     = yield
