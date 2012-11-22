@@ -20,7 +20,10 @@ group :assets do
   gem 'uglifier', '>= 1.0.3'
 end
 
-
+group :development, :test do
+  gem "capybara"
+  gem "rspec-rails", ">= 2.0.1"
+end
 
 # To use ActiveModel has_secure_password
 # gem 'bcrypt-ruby', '~> 3.0.0'
@@ -37,10 +40,8 @@ end
 # To use debugger
 # gem 'debugger'
 
-gem "capybara", :group => [:development, :test]
 gem "devise"
 gem "jquery-rails"
-gem "rspec-rails", ">= 2.0.1", :group => [:development, :test]
 gem "haml", ">= 3.0.0"
 gem "slim"
 gem "slim-rails"
