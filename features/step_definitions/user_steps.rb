@@ -2,11 +2,12 @@
 
 def create_visitor
   @visitor ||= { :email => "example@example.com",
+    :lastname => "example", :firstname => "me",
     :password => "please", :password_confirmation => "please" }
 end
 
 def create_site_user
-  @site_user ||= User.create({email: 'me@my.net', password: 'password', password_confirmation: 'password'})
+  @site_user ||= User.create({email: 'me@my.net', lastname: "my", first: "me", password: 'password', password_confirmation: 'password'})
 end
 
 def find_site_user
@@ -39,6 +40,8 @@ def sign_up
   delete_user
   visit '/users/sign_up'
   fill_in "Email", :with => @visitor[:email]
+  fill_in "Lastname", :with => @visitor[:lastname]
+  fill_in "Firstname", :with => @visitor[:firstname]
   fill_in "user_password", :with => @visitor[:password]
   fill_in "user_password_confirmation", :with => @visitor[:password_confirmation]
   click_button "Sign up"
@@ -188,6 +191,8 @@ end
 
 Then /^I enter an email and a password$/ do
   fill_in "Email", :with => "yser@email.com"
+  fill_in "Lastname", :with => "Email"
+  fill_in "Firstname", :with => "User"
   fill_in "Password", :with => "sdaf666"
   fill_in "Password confirmation", :with => "sdaf666"
   click_button "Update User"
