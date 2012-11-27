@@ -45,7 +45,6 @@ end
 
 gem "devise"
 gem "jquery-rails"
-gem "haml", ">= 3.0.0"
 gem "slim"
 gem "slim-rails"
 gem "cancan"

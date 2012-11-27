@@ -28,7 +28,11 @@ end
 def create_user
   create_visitor
   delete_user
-  @user = FactoryGirl.create(:user, email: @visitor[:email], last_sign_in_ip: "127.0.0.1")
+  @user = FactoryGirl.create(:user,
+                             firstname: 'Firstname',
+                             lastname: 'Lastname',
+                             email: @visitor[:email],
+                             last_sign_in_ip: "127.0.0.1")
 end
 
 def delete_user
