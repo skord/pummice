@@ -11,4 +11,5 @@ class User < ActiveRecord::Base
 
   validates_presence_of :lastname, :firstname
   validates_uniqueness_of :lastname, :firstname, :email, :case_sensitive => false
+  has_and_belongs_to_many :games
 end
