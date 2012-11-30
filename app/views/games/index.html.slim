@@ -1,0 +1,18 @@
+h1 All Games
+
+table
+  thead
+    tr
+      th
+        'Game name
+      th
+        'Last moved on
+  tbody
+    - @games.each do |game|
+      tr
+        td class=game
+          =' link_to game.name, game
+        td class=game
+          = game.updated_at
+
+= link_to "New Game", new_game_path

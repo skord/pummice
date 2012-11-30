@@ -1,4 +1,10 @@
 Pummice::Application.routes.draw do
+  resources :games, only: [:index, :show, :new, :create] do
+    member do
+      put 'join'
+    end
+  end
+
   get "welcome/index"
 
   devise_for :users
