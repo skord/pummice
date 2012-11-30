@@ -2,6 +2,7 @@
   - if current_user
     =' link_to 'Sign out', destroy_user_session_path, method: :delete
     =' link_to 'Edit profile', edit_user_registration_path
+    =' link_to 'View current games', games_path
     = link_to 'Create new game', new_game_path
   - else
     =' link_to 'Sign up', new_user_registration_path
