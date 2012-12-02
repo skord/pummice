@@ -19,4 +19,12 @@ table.game
 		border: dotted 1px gray;
 		background-color: #9999CC
 	}
+	tr:nth-child(odd)
+	{
+		background-color: #eee;
+	}
+	tr:nth-child(even)
+	{
+		background-color: #fff;
+	}
 }

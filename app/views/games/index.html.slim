@@ -19,9 +19,9 @@ table class='game'
         td
           = link_to game.name, game
         td
-          = game.created_at
+          = game.created_at.strftime('%Y-%m-%d %H:%M:%S')
         td
-          = game.updated_at
+          = game.updated_at.strftime('%Y-%m-%d %H:%M:%S')
 
 br
 
