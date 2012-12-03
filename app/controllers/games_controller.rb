@@ -1,4 +1,9 @@
 class GamesController < ApplicationController
+
+  # This section tells Devise that these actions require a user to be authenticated first
+  # Viewing all games and viewing a particular game do not require a user to be signed in
+  before_filter :authenticate_user!, :only => [:create, :join, :new]
+
   def index
   	@games = Game.all
     @current_user = current_user

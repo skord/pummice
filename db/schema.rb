@@ -42,8 +42,8 @@ ActiveRecord::Schema.define(:version => 20121202205931) do
     t.datetime "updated_at",                                                                    :null => false
     t.string   "lastname"
     t.string   "firstname"
-    t.boolean  "admin"
-    t.string   "timezone",               :default => "Central Time (US & Canada), (GMT-06:00)"
+    t.boolean  "admin",                  :default => false
+    t.string   "timezone",               :default => "Central Time (US & Canada)"
   end
 
   add_index "users", ["email"], :name => "index_users_on_email", :unique => true
