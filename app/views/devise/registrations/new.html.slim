@@ -20,6 +20,9 @@ h2 Sign up
       tr
         td = f.label :password_confirmation
         td = f.password_field :password_confirmation
+      tr
+        td = f.label :timezone
+        td = f.collection_select :timezone, ActiveSupport::TimeZone.all, :name, :to_s
 
   div
     = f.submit "Sign up"

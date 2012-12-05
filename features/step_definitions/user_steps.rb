@@ -3,11 +3,12 @@
 def create_visitor
   @visitor ||= { :email => "example@example.com",
     :lastname => "example", :firstname => "me",
-    :password => "please", :password_confirmation => "please" }
+    :password => "please", :password_confirmation => "please",
+    :timezone => "UTC" }
 end
 
 def create_site_user
-  @site_user ||= User.create({email: 'me@my.net', lastname: "my", first: "me", password: 'password', password_confirmation: 'password'})
+  @site_user ||= User.create({email: 'me@my.net', lastname: "my", first: "me", password: 'password', password_confirmation: 'password', timezone: "UTC"})
 end
 
 def find_site_user
@@ -32,6 +33,7 @@ def create_user
                              firstname: 'Firstname',
                              lastname: 'Lastname',
                              email: @visitor[:email],
+                             timezone: @visitor[:timezone],
                              last_sign_in_ip: "127.0.0.1")
 end
 
@@ -48,6 +50,7 @@ def sign_up
   fill_in "Firstname", :with => @visitor[:firstname]
   fill_in "user_password", :with => @visitor[:password]
   fill_in "user_password_confirmation", :with => @visitor[:password_confirmation]
+  select "(GMT+00:00) UTC", :from => "Timezone"
   click_button "Sign up"
   find_user
 end
@@ -199,6 +202,7 @@ Then /^I enter an email and a password$/ do
   fill_in "Firstname", :with => "User"
   fill_in "Password", :with => "sdaf666"
   fill_in "Password confirmation", :with => "sdaf666"
+  select "(GMT+00:00) UTC", :from => "Timezone"
   click_button "Update User"
 end
 
