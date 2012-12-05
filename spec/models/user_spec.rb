@@ -12,6 +12,14 @@ describe User do
       user.lastname = nil
       user.should_not be_valid
     end
+    it "should require a unique first and last name combination" do
+      user.firstname = 'joe'
+      user.lastname = 'blow'
+      user.save
+      user2 = FactoryGirl.build(:user, firstname: 'joe', lastname: 'blow')
+      user2.should_not be_valid
+    end
+
   end
   context "associations" do
     it "should know about its games" do

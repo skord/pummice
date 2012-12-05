@@ -10,6 +10,11 @@ class User < ActiveRecord::Base
   # attr_accessible :title, :body
 
   validates_presence_of :lastname, :firstname
-  validates_uniqueness_of :lastname, :firstname, :email, :case_sensitive => false
   has_and_belongs_to_many :games
+
+  validate :unique_first_and_last_name
+
+  def unique_first_and_last_name
+    false if User.where({:firstname => firstname, :lastname => lastname}).count > 0
+  end
 end
