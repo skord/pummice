@@ -16,21 +16,23 @@ describe GamesController do
 
   describe "GET 'show'" do
     it "returns http success" do
-      get 'show'
+      @game = FactoryGirl.create(:game)
+      get 'show', :id => @game.id
       response.should be_success
     end
   end
 
-  describe "GET 'join'" do
+  describe "POST 'join'" do
     it "returns http success" do
-      get 'join'
+      game = FactoryGirl.create(:game)
+      post 'join', :id => game.id
       response.should be_success
     end
   end
 
-  describe "GET 'create'" do
+  describe "GET 'new'" do
     it "returns http success" do
-      get 'create'
+      get 'new'
       response.should be_success
     end
   end
