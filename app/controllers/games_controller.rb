@@ -14,11 +14,14 @@ class GamesController < ApplicationController
   end
 
   def join
+    @game = Game.find(params[:id])
+    @game.users << current_user
   end
 
   def create
     @game = Game.new(params[:game])
     if @game.save
+      @game.users << current_user
       redirect_to game_path(@game)
     else
       flash[:notice] = "We couldn't create your game because you suck"

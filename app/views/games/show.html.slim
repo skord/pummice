@@ -1,2 +1,10 @@
 h1= @game.name
+
+h3 Users in game:
+p 
+  - @game.users.each do |user|
+    =' user.firstname
+    =' user.lastname
+
+
 = link_to "All Games", games_path

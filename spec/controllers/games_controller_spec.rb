@@ -3,8 +3,8 @@ require 'spec_helper'
 describe GamesController do
 
   before(:each) do
-    user = FactoryGirl.create(:user)
-    sign_in user
+    @user = FactoryGirl.create(:user)
+    sign_in @user
   end
 
   describe "GET 'index'" do
@@ -26,7 +26,7 @@ describe GamesController do
     it "returns http success" do
       game = FactoryGirl.create(:game)
       post 'join', :id => game.id
-      response.should be_success
+      game.users.include?(@user).should be_true
     end
   end
 
