@@ -11,6 +11,8 @@ table class='game'
         'Start date
       th
         'Last play
+      th
+        'Players
   tbody
     - @games.each do |game|
       tr
@@ -22,6 +24,11 @@ table class='game'
           = game.created_at.strftime('%Y-%m-%d %H:%M:%S')
         td
           = game.updated_at.strftime('%Y-%m-%d %H:%M:%S')
+        td
+          -game.users.each do |user|
+            =' user.firstname
+            = user.lastname
+            br
 
 br
 
