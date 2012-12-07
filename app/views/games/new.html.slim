@@ -1,5 +1,5 @@
 h2 Create new game
 
 = simple_form_for @game do |f|
-  = f.input :name
+  = f.input :name, :label => "Name:", :input_html => { :value => "%s %s's game" % [current_user[:firstname], current_user[:lastname]] }, :required => true
   = f.submit
