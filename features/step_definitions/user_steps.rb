@@ -3,8 +3,8 @@
 def create_visitor
   @visitor ||= { :email => "example@example.com",
     :lastname => "example", :firstname => "me",
-    :password => "please", :password_confirmation => "please",
-    :timezone => "UTC" }
+    :password => "please", :password_confirmation => "please", :current_password => "please",
+    :timezone => "(GMT+00:00) UTC" }
 end
 
 def create_site_user
@@ -30,16 +30,39 @@ def create_user
   create_visitor
   delete_user
   @user = FactoryGirl.create(:user,
-                             firstname: 'Firstname',
-                             lastname: 'Lastname',
+                             firstname: @visitor[:firstname],
+                             lastname: @visitor[:lastname],
                              email: @visitor[:email],
-                             timezone: @visitor[:timezone],
+                             timezone: @visitor[:timezone][12..-1],
                              last_sign_in_ip: "127.0.0.1")
 end
 
 def delete_user
   @user ||= User.where(:email => @visitor[:email]).first
   @user.destroy unless @user.nil?
+end
+
+def create_visitor2
+  @visitor2 ||= { :email => "example2@example.com",
+    :lastname => "example2", :firstname => "me2",
+    :password => "please2", :password_confirmation => "please2", :current_password => "please2",
+    :timezone => "(GMT+00:00) UTC" }
+end
+
+def create_user2
+  create_visitor2
+  delete_user2
+  @user2 = FactoryGirl.create(:user,
+                             firstname: @visitor2[:firstname],
+                             lastname: @visitor2[:lastname],
+                             email: @visitor2[:email],
+                             timezone: @visitor2[:timezone][12..-1],
+                             last_sign_in_ip: "127.0.0.1")
+end
+
+def delete_user2
+  @user2 ||= User.where(:email => @visitor2[:email]).first
+  @user2.destroy unless @user2.nil?
 end
 
 def sign_up
@@ -50,7 +73,7 @@ def sign_up
   fill_in "Firstname", :with => @visitor[:firstname]
   fill_in "user_password", :with => @visitor[:password]
   fill_in "user_password_confirmation", :with => @visitor[:password_confirmation]
-  select "(GMT+00:00) UTC", :from => "Timezone"
+  select @visitor[:timezone], :from => "Timezone"
   click_button "Sign up"
   find_user
 end
@@ -60,6 +83,19 @@ def sign_in
   fill_in "Email", :with => @visitor[:email]
   fill_in "Password", :with => @visitor[:password]
   click_button "Sign in"
+end
+
+def edit_user
+  visit '/users/edit'
+  fill_in "Email", :with => @visitor[:email]
+  fill_in "Lastname", :with => @visitor[:lastname]
+  fill_in "Firstname", :with => @visitor[:firstname]
+  fill_in "user_password", :with => @visitor[:password]
+  fill_in "user_password_confirmation", :with => @visitor[:password_confirmation]
+  select @visitor[:timezone], :from => "Timezone"
+  fill_in "user_current_password", :with => @visitor[:current_password]
+  click_button "Update"
+  find_user
 end
 
 ### GIVEN ###
@@ -84,6 +120,10 @@ Given /^I exist as a user$/ do
   create_user
 end
 
+Given /^Another user exists$/ do
+  create_user2
+end
+
 Given /^I do not exist as a user$/ do
   create_visitor
   delete_user
@@ -91,6 +131,10 @@ end
 
 Given /^a user$/ do
   @user = create_user
+end
+
+Given /^another user$/ do
+  @user = create_user2
 end
 
 ### WHEN ###
@@ -146,6 +190,43 @@ When /^I sign in with a wrong password$/ do
   sign_in
 end
 
+When /^I go to the edit screen$/ do
+  visit '/users/edit'
+end
+
+When /^I change my profile$/ do
+  create_visitor
+  @visitor = @visitor.merge(:email => "yser@email.com", 
+                            :lastname => "Email", 
+                            :firstname => "User", 
+                            :password => "sdaf666", 
+                            :password_confirmation => "sdaf666", 
+                            :timezone => "(GMT+00:00) UTC")
+  edit_user
+end
+
+When /^I change my profile with incorrect password$/ do
+  create_visitor
+  @visitor = @visitor.merge(:current_password => "wrongpass")
+  edit_user
+end
+
+When /^I change my profile to an existing user$/ do
+  create_user2
+  create_visitor
+  create_visitor2
+  @visitor = @visitor.merge(:firstname => @visitor2[:firstname], :lastname => @visitor2[:lastname])
+  edit_user
+end
+
+When /^I change my profile to an existing email address$/ do
+  create_user2
+  create_visitor
+  create_visitor2
+  @visitor = @visitor.merge(:email => @visitor2[:email])
+  edit_user
+end
+
 ### THEN ###
 
 Then /^I should be signed in$/ do
@@ -196,14 +277,8 @@ Then /^I should see an account edited message$/ do
   page.should have_content "You updated your account successfully."
 end
 
-Then /^I enter an email and a password$/ do
-  fill_in "Email", :with => "yser@email.com"
-  fill_in "Lastname", :with => "Email"
-  fill_in "Firstname", :with => "User"
-  fill_in "Password", :with => "sdaf666"
-  fill_in "Password confirmation", :with => "sdaf666"
-  select "(GMT+00:00) UTC", :from => "Timezone"
-  click_button "Update User"
+Then /^I should see an account saving error$/ do
+  page.should have_content "prohibited this user from being saved:"
 end
 
 Then /^I should be on the root page$/ do

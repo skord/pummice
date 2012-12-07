@@ -15,6 +15,6 @@ class User < ActiveRecord::Base
   validate :unique_first_and_last_name
 
   def unique_first_and_last_name
-    errors.add(:base, "User name must be unique") if User.where({:firstname => firstname, :lastname => lastname}).count > 0
+    errors.add(:base, "User name must be unique") if User.where({:firstname => firstname, :lastname => lastname}).where("id != (?)", id).count > 0
   end
 end
