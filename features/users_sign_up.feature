@@ -25,3 +25,11 @@ Feature: Sign up
     Scenario: User signs up with mismatched password and confirmation
       When I sign up with a mismatched password confirmation
       Then I should see a mismatched password message
+
+    Scenario: User signs up with the same last name as an existing user
+      When I sign up with the same last name as an existing user
+      Then I should see a successful sign up message
+
+    Scenario: User signs up with the same first and last name as an existing user
+      When I sign up with the same first and last name as an existing user
+      Then I should see an account saving error

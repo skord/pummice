@@ -152,6 +152,20 @@ When /^I sign up with valid user data$/ do
   sign_up
 end
 
+When /^I sign up with the same last name as an existing user$/ do
+  create_user2
+  create_visitor
+  @visitor = @visitor.merge(:lastname => @visitor2[:lastname])
+  sign_up
+end
+
+When /^I sign up with the same first and last name as an existing user$/ do
+  create_user2
+  create_visitor
+  @visitor = @visitor.merge(:firstname => @visitor2[:firstname], :lastname => @visitor2[:lastname])
+  sign_up
+end
+
 When /^I sign up with an invalid email$/ do
   create_visitor
   @visitor = @visitor.merge(:email => "notanemail")
