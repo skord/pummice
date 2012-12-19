@@ -4,22 +4,41 @@ table class='game'
   thead
     tr
       th
-        '#
+        |#
       th
-        'Game
+        |Game
       th
-        'Start date
+        |Variant
       th
-        'Last play
+        |Start date
       th
-        'Players
+        |Last play
+      th
+        |Players
   tbody
-    - @games.each do |game|
+    - @games.sort_by{|game| game.updated_at}.reverse.each do |game|
       tr
         td
           = link_to game.id, game
         td
           = link_to game.name, game
+        - if game.variant == GameVariant::FRANCE
+          td class='variant-france'
+            |France 
+            - if game.is_short_game
+              img src="assets/option_short.png" alt="Short game" title="Short game"
+        - elsif game.variant == GameVariant::IRELAND
+          td class='variant-ireland'
+            |Ireland 
+            - if game.is_short_game
+              img src="assets/option_short.png" alt="Short game" title="Short game"
+            - if game.use_loamy_landscape
+              img src="assets/option_loamy.png" alt="Using Loamy Landscape card" title="Using Loamy Landscape card"
+        - else
+          td
+            |Unknown 
+            - if game.is_short_game
+              img src="assets/option_short.png" alt="Short game" title="Short game"
         td
           = game.created_at.strftime('%Y-%m-%d %H:%M:%S')
         td
