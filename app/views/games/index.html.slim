@@ -27,13 +27,13 @@ table class='game'
             |France 
             - if game.is_short_game
               img src="assets/option_short.png" alt="Short game" title="Short game"
+            - if game.use_loamy_landscape
+              img src="assets/option_loamy.png" alt="Using Loamy Landscape card" title="Using Loamy Landscape card"
         - elsif game.variant == GameVariant::IRELAND
           td class='variant-ireland'
             |Ireland 
             - if game.is_short_game
               img src="assets/option_short.png" alt="Short game" title="Short game"
-            - if game.use_loamy_landscape
-              img src="assets/option_loamy.png" alt="Using Loamy Landscape card" title="Using Loamy Landscape card"
         - else
           td
             |Unknown 

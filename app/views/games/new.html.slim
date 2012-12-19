@@ -9,7 +9,7 @@ h2 Create new game
     :as => :select, \
     :required => true, \
     :default => "France", \
-    :input_html => {:onchange => 'var e = document.getElementById("game_variant"); if (e.options[e.selectedIndex].text == "Ireland") { document.getElementById("use_loamy_landscape").style.display = "block" } else { document.getElementById("use_loamy_landscape").style.display = "none" };'}
+    :input_html => {:onchange => 'var e = document.getElementById("game_variant"); if (e.options[e.selectedIndex].text == "Ireland") { document.getElementById("use_loamy_landscape").style.display = "none" } else { document.getElementById("use_loamy_landscape").style.display = "block" };'}
   = f.input :is_short_game, :label => "Short game?", :as => :select, :required => true, :default => false
-  = f.input :use_loamy_landscape, :label => "Use Loamy Landscape?", :as => :select, :default => false, :wrapper_html => {:id => "use_loamy_landscape", :style => "display: none;"}
+  = f.input :use_loamy_landscape, :label => "Use Loamy Landscape?", :as => :select, :default => false, :wrapper_html => {:id => "use_loamy_landscape", :style => "display: block;"}
   = f.submit
