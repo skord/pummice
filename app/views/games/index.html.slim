@@ -7,10 +7,8 @@ table class='game'
         |#
       th
         |Game
-      th
+      th colspan="2"
         |Variant
-      th
-        |Start date
       th
         |Last play
       th
@@ -18,29 +16,26 @@ table class='game'
   tbody
     - @games.sort_by{|game| game.updated_at}.reverse.each do |game|
       tr
-        td
+        td class="textright"
           = link_to game.id, game
         td
           = link_to game.name, game
         - if game.variant == GameVariant::FRANCE
-          td class='variant-france'
+          td class="variant-france no_border_right"
             |France 
-            - if game.is_short_game
-              img src="assets/option_short.png" alt="Short game" title="Short game"
-            - if game.use_loamy_landscape
-              img src="assets/option_loamy.png" alt="Using Loamy Landscape card" title="Using Loamy Landscape card"
+            img src="assets/france.png" alt="France" title="France"
         - elsif game.variant == GameVariant::IRELAND
-          td class='variant-ireland'
+          td class="variant-ireland no_border_right"
             |Ireland 
-            - if game.is_short_game
-              img src="assets/option_short.png" alt="Short game" title="Short game"
+            img src="assets/ireland.png" alt="Ireland" title="Ireland"
         - else
-          td
+          td class="no_border_right"
             |Unknown 
-            - if game.is_short_game
-              img src="assets/option_short.png" alt="Short game" title="Short game"
-        td
-          = game.created_at.strftime('%Y-%m-%d %H:%M:%S')
+        td class="no_border_left"
+          - if game.is_short_game
+            img src="assets/option_short.png" alt="Short game" title="Short game"
+          - if game.use_loamy_landscape
+            img src="assets/option_loamy.png" alt="Using Loamy Landscape card" title="Using Loamy Landscape card"
         td
           = game.updated_at.strftime('%Y-%m-%d %H:%M:%S')
         td

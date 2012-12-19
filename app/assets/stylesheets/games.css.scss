@@ -5,6 +5,8 @@
 table.game
 {
 	border-collapse:collapse;
+	width: 90%;
+	font-size: 0.8em;
 	tbody
 	{
 		border-top: solid 1px black;
@@ -12,7 +14,7 @@ table.game
 	td
 	{
 		border: dotted 1px gray;
-		padding: 3px 10px;
+		padding: 2px 4px;
 		vertical-align: top;
 	}
 	th
@@ -28,14 +30,30 @@ table.game
 	{
 		background-color: #fff;
 	}
-}
 
-.variant-france {
-	color: #fff;
-	background-color: #804;
-}
+	img {
+		padding: 1px;
+	}
+	.textright {
+		text-align: right;
+	}
+	.no_border_right {
+		border-right: 0px;
+	}
 
-.variant-ireland {
-	color: #fff;
-	background-color: #080;
+	.no_border_left {
+		border-left: 0px;
+	}
+
+	.variant-france {
+		text-align: center;
+		color: #fff;
+		background-color: #804;
+	}
+
+	.variant-ireland {
+		text-align: center;
+		color: #fff;
+		background-color: #080;
+	}
 }
