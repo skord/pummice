@@ -39,9 +39,9 @@ table class='game'
         td
           = game.updated_at.strftime('%Y-%m-%d %H:%M:%S')
         td
-          -game.users.each do |user|
-            =' user.firstname
-            = user.lastname
+          -game.seats.sort_by{|seat| seat.number}.each do |seat|
+            =' seat.user.firstname
+            = seat.user.lastname
             br
 
 br

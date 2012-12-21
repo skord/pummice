@@ -7,10 +7,10 @@ class User < ActiveRecord::Base
 
   # Setup accessible (or protected) attributes for your model
   attr_accessible :lastname, :firstname, :email, :password, :password_confirmation, :remember_me, :timezone
-  # attr_accessible :title, :body
 
   validates_presence_of :lastname, :firstname
-  has_and_belongs_to_many :games
+  has_many :seats
+  has_many :games, :through => :seats
 
   validate :unique_first_and_last_name
 

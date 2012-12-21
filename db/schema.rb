@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121219011744) do
+ActiveRecord::Schema.define(:version => 20121221031749) do
 
   create_table "games", :force => true do |t|
     t.string   "name"
@@ -23,12 +23,13 @@ ActiveRecord::Schema.define(:version => 20121219011744) do
     t.boolean  "use_loamy_landscape", :default => false
   end
 
-  create_table "games_users", :id => false, :force => true do |t|
-    t.integer "game_id", :null => false
-    t.integer "user_id", :null => false
+  create_table "seats", :force => true do |t|
+    t.integer "game_id",                :null => false
+    t.integer "user_id"
+    t.integer "number",  :default => 0
   end
 
-  add_index "games_users", ["game_id", "user_id"], :name => "index_games_users_on_game_id_and_user_id"
+  add_index "seats", ["game_id", "user_id"], :name => "index_seats_on_game_id_and_user_id"
 
   create_table "users", :force => true do |t|
     t.string   "email",                  :default => "",                                        :null => false
