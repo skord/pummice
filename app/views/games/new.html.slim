@@ -2,6 +2,17 @@ h2 Create new game
 
 = simple_form_for @game do |f|
   = f.input :name, :label => "Name:", :input_html => { :value => "%s %s's game" % [current_user[:firstname], current_user[:lastname]] }, :required => true
+  br
+  = f.input :number_of_players, \
+    :id => "number_of_players", \
+    :label => "Number of players", \
+    :collection => 1..4, \
+    :as => :select, \
+    :required => true, \
+    :default => 2, \
+    :input_html => {:onchange => 'var e = document.getElementById("game_number_of_players"); if (e.options[e.selectedIndex].text == "1") { document.getElementById("is_short_game").style.display = "none"; } else { document.getElementById("is_short_game").style.display = "block"; };'}
+  = f.input :is_short_game, :label => "Short game?", :as => :select, :required => true, :default => true, :wrapper_html => {:id => "is_short_game", :style => "display: block;"}
+  br
   = f.input :variant, \
     :id => "variant", \
     :label => "Variant", \
@@ -9,7 +20,7 @@ h2 Create new game
     :as => :select, \
     :required => true, \
     :default => "France", \
-    :input_html => {:onchange => 'var e = document.getElementById("game_variant"); if (e.options[e.selectedIndex].text == "Ireland") { document.getElementById("use_loamy_landscape").style.display = "none" } else { document.getElementById("use_loamy_landscape").style.display = "block" };'}
-  = f.input :is_short_game, :label => "Short game?", :as => :select, :required => true, :default => false
+    :input_html => {:onchange => 'var e = document.getElementById("game_variant"); if (e.options[e.selectedIndex].text == "Ireland") { document.getElementById("use_loamy_landscape").style.display = "none"; } else { document.getElementById("use_loamy_landscape").style.display = "block"; };'}
   = f.input :use_loamy_landscape, :label => "Use Loamy Landscape?", :as => :select, :default => false, :wrapper_html => {:id => "use_loamy_landscape", :style => "display: block;"}
+  br
   = f.submit

@@ -19,6 +19,14 @@ class GamesController < ApplicationController
   end
 
   def create
+    if params[:game][:variant] == GameVariant::IRELAND and params[:game][:use_loamy_landscape]
+      params[:game][:use_loamy_landscape] = false
+    end
+
+    if params[:game][:number_of_players] == 1
+      params[:game][:is_short_game] = false
+    end
+
     @game = Game.new(params[:game])
     if @game.save
       @game.users << current_user

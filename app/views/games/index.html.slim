@@ -12,6 +12,8 @@ table class='game'
       th
         |Last play
       th
+        |# of Players
+      th
         |Players
   tbody
     - @games.sort_by{|game| game.updated_at}.reverse.each do |game|
@@ -38,6 +40,8 @@ table class='game'
             img src="assets/option_loamy.png" alt="Using Loamy Landscape card" title="Using Loamy Landscape card"
         td
           = game.updated_at.strftime('%Y-%m-%d %H:%M:%S')
+        td
+          = game.number_of_players
         td
           -game.seats.sort_by{|seat| seat.number}.each do |seat|
             =' seat.user.firstname
