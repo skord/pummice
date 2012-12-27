@@ -11,7 +11,27 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121223022229) do
+ActiveRecord::Schema.define(:version => 20121226051746) do
+
+  create_table "building_cards", :force => true do |t|
+    t.string  "name"
+    t.integer "variant"
+    t.string  "key"
+    t.boolean "is_base"
+    t.boolean "is_cloister"
+    t.integer "age"
+    t.integer "available_location_types"
+    t.integer "number_players"
+    t.integer "cost_wood"
+    t.integer "cost_clay"
+    t.integer "cost_stone"
+    t.integer "cost_straw"
+    t.integer "cost_coin"
+    t.integer "cost_fuel"
+    t.integer "cost_food"
+    t.integer "economic_value"
+    t.integer "dwelling_value"
+  end
 
   create_table "games", :force => true do |t|
     t.string   "name"

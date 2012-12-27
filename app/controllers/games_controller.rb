@@ -5,8 +5,11 @@ class GamesController < ApplicationController
   before_filter :authenticate_user!, :only => [:create, :join, :new]
 
   def index
-  	@games = Game.all
     @current_user = current_user
+  	@games = Game.all
+    if params[:mine] == 'y'
+      @games = @games.delete_if {|game| !game.users.include? current_user}
+    end
   end
 
   def show
