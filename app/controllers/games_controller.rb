@@ -33,6 +33,21 @@ class GamesController < ApplicationController
     @game = Game.new(params[:game])
     if @game.save
       @game.users << current_user
+
+      # This is just temporary until the Start verb gets completed.
+      # The Start verb should set up each Seat's Heartland along with the
+      # Game's setup of Plots, Districts, etc.
+      @current_user_seat = @game.seats.first
+      @current_user_seat.tile00 = BuildingCard.where("key = 'R02'")[0]
+      @current_user_seat.tile10 = BuildingCard.where("key = 'R02'")[0]
+      @current_user_seat.tile01 = BuildingCard.where("key = 'R01'")[0]
+      @current_user_seat.tile11 = BuildingCard.where("key = 'R01'")[0]
+      @current_user_seat.tile02 = BuildingCard.where("key = 'R01'")[0]
+      @current_user_seat.tile12 = BuildingCard.where("key = 'H02'")[0]
+      @current_user_seat.tile04 = BuildingCard.where("key = 'H01'")[0]
+      @current_user_seat.tile14 = BuildingCard.where("key = 'H03'")[0]
+      @current_user_seat.save
+
       redirect_to game_path(@game)
     else
       flash[:notice] = "We couldn't create your game because you suck"

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121226051746) do
+ActiveRecord::Schema.define(:version => 20121229030507) do
 
   create_table "building_cards", :force => true do |t|
     t.string  "name"
@@ -90,9 +90,24 @@ ActiveRecord::Schema.define(:version => 20121226051746) do
     t.integer "clergy0_locationY",      :default => 0
     t.integer "clergy1_locationX",      :default => 0
     t.integer "clergy1_locationY",      :default => 0
+    t.integer "tile00_id"
+    t.integer "tile10_id"
+    t.integer "tile01_id"
+    t.integer "tile11_id"
+    t.integer "tile02_id"
+    t.integer "tile12_id"
+    t.integer "tile03_id"
+    t.integer "tile13_id"
+    t.integer "tile04_id"
+    t.integer "tile14_id"
   end
 
   add_index "seats", ["game_id", "user_id"], :name => "index_seats_on_game_id_and_user_id"
+  add_index "seats", ["tile00_id", "tile10_id"], :name => "index_seats_on_tile00_id_and_tile10_id"
+  add_index "seats", ["tile01_id", "tile11_id"], :name => "index_seats_on_tile01_id_and_tile11_id"
+  add_index "seats", ["tile02_id", "tile12_id"], :name => "index_seats_on_tile02_id_and_tile12_id"
+  add_index "seats", ["tile03_id", "tile13_id"], :name => "index_seats_on_tile03_id_and_tile13_id"
+  add_index "seats", ["tile04_id", "tile14_id"], :name => "index_seats_on_tile04_id_and_tile14_id"
 
   create_table "users", :force => true do |t|
     t.string   "email",                  :default => "",                           :null => false
