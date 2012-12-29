@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121229030507) do
+ActiveRecord::Schema.define(:version => 20121229063353) do
 
   create_table "building_cards", :force => true do |t|
     t.string  "name"
@@ -57,7 +57,7 @@ ActiveRecord::Schema.define(:version => 20121229030507) do
   end
 
   create_table "seats", :force => true do |t|
-    t.integer "game_id",                               :null => false
+    t.integer "game_id",                                 :null => false
     t.integer "user_id"
     t.integer "number",                 :default => 0
     t.integer "res_peat",               :default => 0
@@ -100,9 +100,33 @@ ActiveRecord::Schema.define(:version => 20121229030507) do
     t.integer "tile13_id"
     t.integer "tile04_id"
     t.integer "tile14_id"
+    t.integer "tile00_type",            :default => 1
+    t.integer "tile10_type",            :default => 1
+    t.integer "tile01_type",            :default => 1
+    t.integer "tile11_type",            :default => 1
+    t.integer "tile02_type",            :default => 1
+    t.integer "tile12_type",            :default => 1
+    t.integer "tile03_type",            :default => 1
+    t.integer "tile13_type",            :default => 1
+    t.integer "tile04_type",            :default => 2
+    t.integer "tile14_type",            :default => 1
+    t.integer "settlement0_id"
+    t.integer "settlement1_id"
+    t.integer "settlement2_id"
+    t.integer "settlement3_id"
+    t.integer "settlement4_id"
+    t.integer "settlement5_id"
+    t.integer "settlement6_id"
+    t.integer "settlement7_id"
+    t.integer "heartland_position_x",   :default => 100
+    t.integer "heartland_position_y",   :default => 100
   end
 
   add_index "seats", ["game_id", "user_id"], :name => "index_seats_on_game_id_and_user_id"
+  add_index "seats", ["settlement0_id", "settlement1_id"], :name => "index_seats_on_settlement0_id_and_settlement1_id"
+  add_index "seats", ["settlement2_id", "settlement3_id"], :name => "index_seats_on_settlement2_id_and_settlement3_id"
+  add_index "seats", ["settlement4_id", "settlement5_id"], :name => "index_seats_on_settlement4_id_and_settlement5_id"
+  add_index "seats", ["settlement6_id", "settlement7_id"], :name => "index_seats_on_settlement6_id_and_settlement7_id"
   add_index "seats", ["tile00_id", "tile10_id"], :name => "index_seats_on_tile00_id_and_tile10_id"
   add_index "seats", ["tile01_id", "tile11_id"], :name => "index_seats_on_tile01_id_and_tile11_id"
   add_index "seats", ["tile02_id", "tile12_id"], :name => "index_seats_on_tile02_id_and_tile12_id"

@@ -46,6 +46,10 @@ class GamesController < ApplicationController
       @current_user_seat.tile12 = BuildingCard.where("key = 'H02'")[0]
       @current_user_seat.tile04 = BuildingCard.where("key = 'H01'")[0]
       @current_user_seat.tile14 = BuildingCard.where("key = 'H03'")[0]
+      @current_user_seat.settlement0 = BuildingCard.where("key = 'S01'")[0]
+      @current_user_seat.settlement1 = BuildingCard.where("key = 'S02'")[0]
+      @current_user_seat.settlement2 = BuildingCard.where("key = 'S03'")[0]
+      @current_user_seat.settlement3 = BuildingCard.where("key = 'S04'")[0]
       @current_user_seat.save
 
       redirect_to game_path(@game)
