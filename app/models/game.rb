@@ -4,6 +4,7 @@ class Game < ActiveRecord::Base
   has_many :users, :through => :seats
   has_many :districts, :as => :districtable
   has_many :plots, :as => :plotable
+  has_many :chatlogs
 
   validate :correct_number_of_users
 

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121230045554) do
+ActiveRecord::Schema.define(:version => 20121230220130) do
 
   create_table "building_cards", :force => true do |t|
     t.string  "name"
@@ -32,6 +32,15 @@ ActiveRecord::Schema.define(:version => 20121230045554) do
     t.integer "economic_value"
     t.integer "dwelling_value"
   end
+
+  create_table "chatlogs", :force => true do |t|
+    t.integer  "game_id",   :null => false
+    t.integer  "seat_id",   :null => false
+    t.datetime "timestamp"
+    t.text     "message"
+  end
+
+  add_index "chatlogs", ["game_id", "seat_id"], :name => "index_chatlogs_on_game_id_and_seat_id"
 
   create_table "districts", :force => true do |t|
     t.integer "districtable_id"
