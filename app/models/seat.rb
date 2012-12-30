@@ -23,6 +23,9 @@ class Seat < ActiveRecord::Base
   belongs_to :settlement6, :class_name => 'BuildingCard', :foreign_key => "settlement6_id"
   belongs_to :settlement7, :class_name => 'BuildingCard', :foreign_key => "settlement7_id"
 
+  has_many :districts, :as => :districtable
+  has_many :plots, :as => :plotable
+
   def tiles
     [tile00, tile10, tile01, tile11, tile02, tile12, tile03, tile13, tile04, tile14].compact!
   end

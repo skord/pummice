@@ -3,5 +3,7 @@ class BuildingCard < ActiveRecord::Base
                 :cost_clay, :cost_stone, :cost_straw, :cost_coin, :cost_fuel, :cost_food, :economic_value, :dwelling_value
 
   has_many :seats
+  has_many :districts
+  has_many :plots
 
 end

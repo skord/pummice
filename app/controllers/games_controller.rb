@@ -37,6 +37,27 @@ class GamesController < ApplicationController
       # This is just temporary until the Start verb gets completed.
       # The Start verb should set up each Seat's Heartland along with the
       # Game's setup of Plots, Districts, etc.
+
+      @game.districts << District.new({:cost => 2})
+      @game.districts << District.new({:cost => 3})
+      @game.districts << District.new({:cost => 4})
+      @game.districts << District.new({:cost => 4})
+      @game.districts << District.new({:cost => 5})
+      @game.districts << District.new({:cost => 5})
+      @game.districts << District.new({:cost => 6})
+      @game.districts << District.new({:cost => 7})
+      @game.districts << District.new({:cost => 8})
+
+      @game.plots << Plot.new({:cost => 3})
+      @game.plots << Plot.new({:cost => 4})
+      @game.plots << Plot.new({:cost => 4})
+      @game.plots << Plot.new({:cost => 5})
+      @game.plots << Plot.new({:cost => 5})
+      @game.plots << Plot.new({:cost => 5})
+      @game.plots << Plot.new({:cost => 6})
+      @game.plots << Plot.new({:cost => 6})
+      @game.plots << Plot.new({:cost => 7})
+
       @current_user_seat = @game.seats.first
       @current_user_seat.tile00 = BuildingCard.where("key = 'R02'")[0]
       @current_user_seat.tile10 = BuildingCard.where("key = 'R02'")[0]
@@ -51,6 +72,8 @@ class GamesController < ApplicationController
       @current_user_seat.settlement2 = BuildingCard.where("key = 'S03'")[0]
       @current_user_seat.settlement3 = BuildingCard.where("key = 'S04'")[0]
       @current_user_seat.save
+
+      #End temporary codeyness
 
       redirect_to game_path(@game)
     else

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121229063353) do
+ActiveRecord::Schema.define(:version => 20121230045554) do
 
   create_table "building_cards", :force => true do |t|
     t.string  "name"
@@ -32,6 +32,31 @@ ActiveRecord::Schema.define(:version => 20121229063353) do
     t.integer "economic_value"
     t.integer "dwelling_value"
   end
+
+  create_table "districts", :force => true do |t|
+    t.integer "districtable_id"
+    t.string  "districtable_type"
+    t.integer "cost"
+    t.integer "side"
+    t.integer "position_x"
+    t.integer "position_y"
+    t.integer "tile0_id"
+    t.integer "tile1_id"
+    t.integer "tile2_id"
+    t.integer "tile3_id"
+    t.integer "tile4_id"
+    t.integer "tile0_type"
+    t.integer "tile1_type"
+    t.integer "tile2_type"
+    t.integer "tile3_type"
+    t.integer "tile4_type"
+  end
+
+  add_index "districts", ["tile0_id"], :name => "index_districts_on_tile0_id"
+  add_index "districts", ["tile1_id"], :name => "index_districts_on_tile1_id"
+  add_index "districts", ["tile2_id"], :name => "index_districts_on_tile2_id"
+  add_index "districts", ["tile3_id"], :name => "index_districts_on_tile3_id"
+  add_index "districts", ["tile4_id"], :name => "index_districts_on_tile4_id"
 
   create_table "games", :force => true do |t|
     t.string   "name"
@@ -55,6 +80,28 @@ ActiveRecord::Schema.define(:version => 20121229063353) do
     t.integer  "wheel_stone_position",     :default => 0
     t.integer  "wheel_house_position",     :default => 0
   end
+
+  create_table "plots", :force => true do |t|
+    t.integer "plotable_id"
+    t.string  "plotable_type"
+    t.integer "cost"
+    t.integer "side"
+    t.integer "position_x"
+    t.integer "position_y"
+    t.integer "tile00_id"
+    t.integer "tile10_id"
+    t.integer "tile01_id"
+    t.integer "tile11_id"
+    t.integer "tile00_type"
+    t.integer "tile10_type"
+    t.integer "tile01_type"
+    t.integer "tile11_type"
+  end
+
+  add_index "plots", ["tile00_id"], :name => "index_plots_on_tile00_id"
+  add_index "plots", ["tile01_id"], :name => "index_plots_on_tile01_id"
+  add_index "plots", ["tile10_id"], :name => "index_plots_on_tile10_id"
+  add_index "plots", ["tile11_id"], :name => "index_plots_on_tile11_id"
 
   create_table "seats", :force => true do |t|
     t.integer "game_id",                                 :null => false
