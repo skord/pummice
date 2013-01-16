@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121230220130) do
+ActiveRecord::Schema.define(:version => 20130106184739) do
 
   create_table "building_cards", :force => true do |t|
     t.string  "name"
@@ -32,6 +32,13 @@ ActiveRecord::Schema.define(:version => 20121230220130) do
     t.integer "economic_value"
     t.integer "dwelling_value"
   end
+
+  create_table "building_cards_games", :id => false, :force => true do |t|
+    t.integer "game_id",          :null => false
+    t.integer "building_card_id", :null => false
+  end
+
+  add_index "building_cards_games", ["game_id", "building_card_id"], :name => "index_building_cards_games_on_game_id_and_building_card_id"
 
   create_table "chatlogs", :force => true do |t|
     t.integer  "game_id",   :null => false
@@ -88,6 +95,10 @@ ActiveRecord::Schema.define(:version => 20121230220130) do
     t.integer  "wheel_grape_position",     :default => 0
     t.integer  "wheel_stone_position",     :default => 0
     t.integer  "wheel_house_position",     :default => 0
+    t.integer  "age",                      :default => 0
+    t.integer  "phase",                    :default => 0
+    t.integer  "round",                    :default => 0
+    t.integer  "turn",                     :default => 0
   end
 
   create_table "plots", :force => true do |t|

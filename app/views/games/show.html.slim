@@ -7,5 +7,10 @@ p
     =' user.lastname
     br
 
+- if @current_user != nil
+  - if !@game.users.include?(@current_user)
+    = simple_form_for @game do |f|
+      = f.submit 'Join this game'
+    br
 
 = link_to "All Games", games_path

@@ -6,4 +6,6 @@ class BuildingCard < ActiveRecord::Base
   has_many :districts
   has_many :plots
 
+  has_and_belongs_to_many :games
+
 end
