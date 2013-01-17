@@ -1,4 +1,9 @@
-h1 All Games
+- if params[:started] == 'n'
+  h1 All unstarted games
+- elsif params[:all] == 'y'
+  h1 All started games
+- else
+  h1 All my games
 
 table class='game'
   thead
@@ -11,6 +16,12 @@ table class='game'
         |Variant
       th
         |Last play
+      th
+        |Round
+      th
+        |Age
+      th
+        |Current Player
       th
         |# of Players
       th
@@ -40,6 +51,14 @@ table class='game'
             img src="assets/option_loamy.png" alt="Using Loamy Landscape card" title="Using Loamy Landscape card"
         td
           = game.updated_at.strftime('%Y-%m-%d %H:%M:%S')
+        td
+          = game.round
+        td
+          = game.map_age
+        td
+          - @cs = game.seats.sort_by{|seat| seat.number}[game.turn % game.number_of_players - 1]
+          =' @cs.user.firstname
+          = @cs.user.lastname
         td
           = game.number_of_players
         td

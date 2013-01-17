@@ -58,3 +58,35 @@ table.game
 		background-color: #080;
 	}
 }
+
+table.board
+{
+	border: 0;
+	cellspacing: 0;
+	cellpadding: 0;
+}
+
+table.heartland
+{
+	background-image:url(heartland.png);
+	background-repeat: no-repeat;
+	width: 475px; height: 300px;
+	tr
+	{
+		height: 150px;
+	}
+	td
+	{
+		width: 95px;
+		background-repeat: no-repeat;
+		background-position: center;
+	}
+	td.R01
+	{
+		background-image:url(r01.png);
+	}
+	td.R02
+	{
+		background-image:url(r02.png);
+	}
+}

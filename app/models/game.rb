@@ -16,6 +16,23 @@ class Game < ActiveRecord::Base
   def correct_number_of_users
     errors.add(:base, "Incorrect number of players") if users.count > 4
   end
+
+  def map_age
+    case age
+    when Age::START
+      return 'Start'
+    when Age::A
+      return 'A'
+    when Age::B
+      return 'B'
+    when Age::C
+      return 'C'
+    when Age::D
+      return 'D'
+    else
+      return ''
+    end
+  end
 end
 
 class WheelType

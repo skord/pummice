@@ -8,9 +8,12 @@ class GamesController < ApplicationController
 
   def index
     @current_user = current_user
-  	@games = Game.all
-    if params[:mine] == 'y'
-      @games = @games.delete_if {|game| !game.users.include? current_user}
+    if params[:started] == 'n'
+      @games = Game.where('round = 0')
+    elsif params[:all] == 'y'
+      @games = Game.where('round > 0')
+    else
+      @games = Game.where('round > 0').joins('LEFT OUTER JOIN seats on seats.game_id = games.id').where('seats.user_id = ?', current_user.id)
     end
   end
 

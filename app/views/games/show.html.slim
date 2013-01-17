@@ -1,16 +1,46 @@
 h1= @game.name
 
-h3 Users in game:
-p 
-  - @game.users.each do |user|
-    =' user.firstname
-    =' user.lastname
+- if @current_user != nil
+  - if @game.round == 0
+    h3 Users in game:
+    p 
+      - @game.users.each do |user|
+        =' user.firstname
+        =' user.lastname
+        br
+    - if !@game.users.include?(@current_user)
+      = simple_form_for @game do |f|
+        = f.submit 'Join this game'
     br
 
-- if @current_user != nil
-  - if !@game.users.include?(@current_user)
-    = simple_form_for @game do |f|
-      = f.submit 'Join this game'
+
+ruby:
+  def class_unless_nil(tile)
+    tile == nil ? { } : {:class => tile.key}
+  end
+
+- if @game.round > 0
+  hr
+  - @game.seats.sort_by{|seat| seat.number}.each do |seat|
+    =' seat.user.firstname
+    =' seat.user.lastname
     br
+    table.board
+      tr
+        td rowspan="2"
+          table.board class='heartland'
+            tr
+              td *class_unless_nil(seat.tile00)
+              td *class_unless_nil(seat.tile01)
+              td *class_unless_nil(seat.tile02)
+              td *class_unless_nil(seat.tile03)
+              td *class_unless_nil(seat.tile04)
+            tr
+              td *class_unless_nil(seat.tile10)
+              td *class_unless_nil(seat.tile11)
+              td *class_unless_nil(seat.tile12)
+              td *class_unless_nil(seat.tile13)
+              td *class_unless_nil(seat.tile14)
+    hr
 
 = link_to "All Games", games_path
