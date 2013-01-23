@@ -52,13 +52,16 @@ table class='game'
         td
           = game.updated_at.strftime('%Y-%m-%d %H:%M:%S')
         td
-          = game.round
+          - if game.round > 0
+            = game.round
         td
-          = game.map_age
+          - if game.round > 0
+            = game.map_age
         td
-          - @cs = game.seats.sort_by{|seat| seat.number}[game.turn % game.number_of_players - 1]
-          =' @cs.user.firstname
-          = @cs.user.lastname
+          - if game.round > 0
+            - @cs = game.seats.sort_by{|seat| seat.number}[game.turn % game.number_of_players - 1]
+            =' @cs.user.firstname
+            = @cs.user.lastname
         td
           = game.number_of_players
         td
