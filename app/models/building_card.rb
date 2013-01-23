@@ -8,6 +8,10 @@ class BuildingCard < ActiveRecord::Base
 
   has_and_belongs_to_many :games
 
+  def before_destroy
+    raise ActiveRecord::ReadOnlyRecord
+  end
+
   def map_age
     case age
     when Age::START
