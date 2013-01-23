@@ -13,6 +13,9 @@ class Game < ActiveRecord::Base
 
   validate :correct_number_of_users
 
+  scope :active, where('round > 0')
+  scope :pending_users, where('round = 0')
+
   def correct_number_of_users
     errors.add(:base, "Incorrect number of players") if users.count > 4
   end

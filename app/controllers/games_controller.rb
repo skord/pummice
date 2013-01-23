@@ -9,9 +9,9 @@ class GamesController < ApplicationController
   def index
     @current_user = current_user
     if params[:started] == 'n'
-      @games = Game.where('round = 0')
+      @games = Game.pending_users
     elsif params[:all] == 'y'
-      @games = Game.where('round > 0')
+      @games = Game.active
     elsif current_user != nil
       @games = Game.where('round > 0').joins('LEFT OUTER JOIN seats on seats.game_id = games.id').where('seats.user_id = ?', current_user.id)
     else
