@@ -12,8 +12,10 @@ class GamesController < ApplicationController
       @games = Game.where('round = 0')
     elsif params[:all] == 'y'
       @games = Game.where('round > 0')
-    else
+    elsif current_user != nil
       @games = Game.where('round > 0').joins('LEFT OUTER JOIN seats on seats.game_id = games.id').where('seats.user_id = ?', current_user.id)
+    else
+      @games = []
     end
   end
 
@@ -78,7 +80,7 @@ class GamesController < ApplicationController
     @game.round = 1  # When 'round' is > 0, that means the game has started
     @game.turn = 1
 
-    @game.wheel_position = 1
+    @game.wheel_position = 2
     @game.wheel_wood_position = 1
     @game.wheel_peat_position = 1
     @game.wheel_grain_position = 1

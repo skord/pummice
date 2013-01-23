@@ -33,6 +33,63 @@ class Game < ActiveRecord::Base
       return ''
     end
   end
+
+  def map_phase
+    case phase
+    when Phase::NORMAL
+      return 'Action'
+    when Phase::SETTLEMENT
+      return 'Settlement'
+    when Phase::ENDGAME
+      return 'End of Game'
+    else
+      return ''
+    end
+  end
+
+  def production_list
+    if (number_of_players == 2 && is_short_game == true)
+      return [0, 1, 2, 2, 3, 4, 4, 5, 6, 6, 7, 8, 10]
+    end
+    return [0, 2, 3, 4, 5, 6, 6, 7, 7, 8, 8, 9, 10]
+  end
+
+  def wood_production
+    production_list[(wheel_position - wheel_wood_position) % 13] if wheel_wood_position > 0
+  end
+
+  def peat_production
+    production_list[(wheel_position - wheel_peat_position) % 13] if wheel_peat_position > 0
+  end
+
+  def grain_production
+    production_list[(wheel_position - wheel_grain_position) % 13] if wheel_grain_position > 0
+  end
+
+  def livestock_production
+    production_list[(wheel_position - wheel_livestock_position) % 13] if wheel_livestock_position > 0
+  end
+
+  def clay_production
+    production_list[(wheel_position - wheel_clay_position) % 13] if wheel_clay_position > 0
+  end
+
+  def coin_production
+    production_list[(wheel_position - wheel_coin_position) % 13] if wheel_coin_position > 0
+  end
+
+  def joker_production
+    production_list[(wheel_position - wheel_joker_position) % 13] if wheel_joker_position > 0
+  end
+
+  def grape_production
+    production_list[(wheel_position - wheel_grape_position) % 13] if 
+      variant == GameVariant::FRANCE && number_of_players > 1 && wheel_grape_position > 0
+  end
+
+  def stone_production
+    production_list[(wheel_position - wheel_stone_position) % 13] if number_of_players > 1 && wheel_stone_position > 0
+  end
 end
 
 class WheelType

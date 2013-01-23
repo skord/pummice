@@ -17,4 +17,8 @@ class User < ActiveRecord::Base
   def unique_first_and_last_name
     errors.add(:base, "User name must be unique") if User.where({:firstname => firstname, :lastname => lastname}).where("id != (?)", id == nil ? 0 : id).count > 0
   end
+
+  def fullname
+    return "%s %s" % [firstname, lastname]
+  end
 end

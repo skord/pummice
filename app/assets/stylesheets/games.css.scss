@@ -59,6 +59,150 @@ table.game
 	}
 }
 
+table.resourcewheel
+{
+	border-collapse:collapse;
+	font-size: 0.8em;
+	thead
+	{
+		border: solid 1px black;
+	}
+	tbody
+	{
+		border-top: solid 1px black;
+	}
+	td
+	{
+		border: solid 1px gray;
+		padding: 2px 4px;
+		vertical-align: top;
+	}
+	th
+	{
+		border: solid 1px gray;
+		background-color: #9999CC
+	}
+	tr:nth-child(odd)
+	{
+		background-color: #eee;
+	}
+	tr:nth-child(even)
+	{
+		background-color: #fff;
+	}
+}
+
+table.buildings
+{
+	border-collapse:collapse;
+	font-size: 0.8em;
+	thead
+	{
+		border: solid 1px black;
+	}
+	tbody
+	{
+		border: solid 1px black;
+	}
+	td
+	{
+		border: solid 1px gray;
+		padding: 2px 4px;
+		vertical-align: top;
+	}
+	td.cloister
+	{
+		background-color: #EFD93F
+	}
+	td.noncloister
+	{
+		background-color: #F8F7DC
+	}
+	th
+	{
+		border: solid 1px gray;
+		background-color: #9999CC
+	}
+	th.cloister
+	{
+		background-color: #EFD93F
+	}
+	th.noncloister
+	{
+		background-color: #F8F7DC
+	}
+	tr:nth-child(odd)
+	{
+		background-color: #eee;
+	}
+	tr:nth-child(even)
+	{
+		background-color: #fff;
+	}
+}
+
+table.districts_plots
+{
+	border-collapse:collapse;
+	font-size: 0.8em;
+	thead
+	{
+		border: solid 1px black;
+	}
+	tbody
+	{
+		border-top: solid 1px black;
+	}
+	td
+	{
+		border: solid 1px gray;
+		padding: 2px 4px;
+		vertical-align: top;
+	}
+	th
+	{
+		border: solid 1px gray;
+		background-color: #9999CC
+	}
+	tr:nth-child(odd)
+	{
+		background-color: #eee;
+	}
+	tr:nth-child(even)
+	{
+		background-color: #fff;
+	}
+}
+
+table.resources
+{
+	border-collapse:collapse;
+	font-size: 0.8em;
+	tbody
+	{
+		border: solid 1px black;
+	}
+	thead
+	{
+		border: solid 1px black;
+	}
+	td
+	{
+		border: dotted 1px gray;
+		padding: 2px 4px;
+		vertical-align: top;
+	}
+	th
+	{
+		border: dotted 1px gray;
+		background-color: #9999CC
+	}
+	tr:nth-child(even)
+	{
+		background-color: #eee;
+	}
+}
+
 table.board
 {
 	border: 0;
@@ -68,6 +212,9 @@ table.board
 
 table.heartland
 {
+	border: 0;
+	cellspacing: 0;
+	cellpadding: 0;
 	background-image:url(heartland.png);
 	background-repeat: no-repeat;
 	width: 475px; height: 300px;
