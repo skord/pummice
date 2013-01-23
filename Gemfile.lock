@@ -31,6 +31,10 @@ GEM
     arel (3.0.2)
     bcrypt-ruby (3.0.1)
     bcrypt-ruby (3.0.1-x86-mingw32)
+    better_errors (0.3.2)
+      coderay (>= 1.0.0)
+      erubis (>= 2.7.0)
+    binding_of_caller (0.6.8)
     builder (3.0.4)
     cancan (1.6.8)
     capybara (2.0.0)
@@ -199,6 +203,8 @@ PLATFORMS
   x86-mingw32
 
 DEPENDENCIES
+  better_errors
+  binding_of_caller
   cancan
   capybara
   coffee-rails (~> 3.2.1)
