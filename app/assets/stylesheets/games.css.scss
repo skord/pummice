@@ -2,6 +2,15 @@
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: 
 
+$redbg: #d44;
+$redfg: #fff;
+$greenbg: #4d4;
+$greenfg: #fff;
+$bluebg: #44d;
+$bluefg: #fff;
+$whitebg: #fff9e6;
+$whitefg: #000;
+
 table.game
 {
 	border-collapse:collapse;
@@ -16,6 +25,12 @@ table.game
 		border: dotted 1px gray;
 		padding: 2px 4px;
 		vertical-align: top;
+	}
+	td.Start
+	{
+		background-position: center;
+		background-repeat: no-repeat;
+		background-image:url(age_start.png);
 	}
 	th
 	{
@@ -59,6 +74,47 @@ table.game
 	}
 }
 
+table.tabs
+{
+	border-collapse: collapse;
+	td
+	{
+		padding: 4px 6px;
+		color: #fff;
+		cursor: pointer;
+		border-width: 2px;
+		border-style: solid;
+		border-color: black;
+	}
+	td.tabgame
+	{
+		background-color: #777;
+	}
+	td.tabseat1
+	{
+		background-color: $redbg;
+		color: $redfg;
+	}
+	td.tabseat2
+	{
+		background-color: $greenbg;
+		color: $greenfg;
+	}
+	td.tabseat3
+	{
+		background-color: $bluebg;
+		color: $bluefg;
+	}
+	td.tabseat4
+	{
+		background-color: $whitebg;
+		color: $whitefg;
+	}
+}
+table.display
+{
+	border-collapse: collapse;
+}
 table.resourcewheel
 {
 	border-collapse:collapse;
@@ -118,6 +174,12 @@ table.buildings
 	{
 		background-color: #F8F7DC
 	}
+	td.Start
+	{
+		background-position: center;
+		background-repeat: no-repeat;
+		background-image:url(age_start.png);
+	}
 	th
 	{
 		border: solid 1px gray;
@@ -138,6 +200,9 @@ table.buildings
 	tr:nth-child(even)
 	{
 		background-color: #fff;
+	}
+	.textright {
+		text-align: right;
 	}
 }
 
@@ -235,5 +300,40 @@ table.heartland
 	td.R02
 	{
 		background-image:url(r02.png);
+	}
+}
+
+table.chatlog
+{
+	border: solid black 1px;
+	padding: 3px;
+	background-color: #DDD;
+	text-align: left;
+	font-size: 0.8em;
+	th, td
+	{
+		padding: 2px 10px;
+		vertical-align: text-top;
+		white-space: pre-wrap;
+	}
+	td.seat1
+	{
+		color: $redbg;
+		font-weight: bold;
+	}
+	td.seat2
+	{
+		color: $greenbg;
+		font-weight: bold;
+	}
+	td.seat3
+	{
+		color: $bluebg;
+		font-weight: bold;
+	}
+	td.seat4
+	{
+		color: $whitebg;
+		font-weight: bold;
 	}
 }

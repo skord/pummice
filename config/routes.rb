@@ -2,6 +2,7 @@ Pummice::Application.routes.draw do
   resources :games, only: [:index, :show, :new, :create] do
     member do
       post 'join'
+      post 'update'
       put 'update'
     end
   end

@@ -36,10 +36,17 @@ class GamesController < ApplicationController
       @game.users << current_user
       if @game.users.count == @game.number_of_players
         start_game
-        redirect_to game_path(@game)
       end
     end
 
+    if params[:commit] == "Post message" && params[:chatlog][:message].strip != ""
+      @game.chatlogs << Chatlog.new({
+        :seat_id => @game.find_seat_by_user(current_user).id, 
+        :timestamp => Time.now, 
+        :message => params[:chatlog][:message]})
+    end
+
+    redirect_to game_path(@game)
   end
 
   def create
@@ -148,7 +155,7 @@ class GamesController < ApplicationController
     @game.seats.each do |seat|
       seat.number = seating[@game.seats.index(seat)]
 
-      if @game.number_of_players.between?(3, 4) and @game.is_short_game
+      if !(@game.number_of_players.between?(3, 4) and @game.is_short_game)
         seat.tile00 = BuildingCard.where(:key => 'R02').first
         seat.tile01 = BuildingCard.where(:key => 'R01').first
       end

@@ -51,18 +51,16 @@ table class='game'
             img src="assets/option_loamy.png" alt="Using Loamy Landscape card" title="Using Loamy Landscape card"
         td
           = game.updated_at.strftime('%Y-%m-%d %H:%M:%S')
-        td
+        td.textright
           - if game.round > 0
             = game.round
-        td
-          - if game.round > 0
-            = game.map_age
+        td class=(if game.round > 0 then game.map_age end)
         td
           - if game.round > 0
             - @cs = game.seats.sort_by{|seat| seat.number}[game.turn % game.number_of_players - 1]
             =' @cs.user.firstname
             = @cs.user.lastname
-        td
+        td.textright
           = game.number_of_players
         td
           -game.seats.sort_by{|seat| seat.number}.each do |seat|

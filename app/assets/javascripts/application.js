@@ -13,3 +13,6 @@
 //= require jquery
 //= require jquery_ujs
 //= require_tree .
+
+function hide(n){document.getElementById(n).style.display='none';}
+function show(m){document.getElementById(m).style.display='';}

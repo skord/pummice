@@ -16,8 +16,54 @@ class Game < ActiveRecord::Base
   scope :active, where('round > 0')
   scope :pending_users, where('round = 0')
 
+  def find_seat_by_user(user)
+    nil if !user.is_a? User
+    seats.where(:user_id => user.id).first
+  end
+
   def correct_number_of_users
     errors.add(:base, "Incorrect number of players") if users.count > 4
+  end
+
+  def grape_enters
+    if variant == GameVariant::IRELAND
+      return 0
+    end
+    case number_of_players
+    when 1
+      return 0
+    when 2
+      return 11
+    when 3
+      if is_short_game
+        return 4
+      end
+      return 8
+    when 4
+      if is_short_game
+        return 4
+      end
+      return 8
+    end
+  end
+
+  def stone_enters
+    case number_of_players
+    when 1
+      return 0
+    when 2
+      return 18
+    when 3
+      if is_short_game
+        return 6
+      end
+      return 13
+    when 4
+      if is_short_game
+        return 6
+      end
+      return 13
+    end
   end
 
   def map_age
