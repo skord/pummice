@@ -45,6 +45,14 @@ table.game
 	{
 		background-color: #fff;
 	}
+	tr.my_turn:nth-child(odd)
+	{
+		background-color: #B3BDD9;
+	}
+	tr.my_turn:nth-child(even)
+	{
+		background-color: darken(#B3BDD9, 10%);
+	}
 
 	img {
 		padding: 1px;
@@ -76,19 +84,28 @@ table.game
 
 table.tabs
 {
-	border-collapse: collapse;
+	width: 95%;
+	#border-collapse: collapse;
+	border-spacing: 2px 0px;
 	td
 	{
 		padding: 4px 6px;
-		color: #fff;
 		cursor: pointer;
 		border-width: 2px;
-		border-style: solid;
-		border-color: black;
+		border-style: outset;
+		border-color: #777;
+	}
+	td.tabselected
+	{
+		background-color: #fff;
+		color: #000;
+		#border-color: black;
+		border-style: inset;
 	}
 	td.tabgame
 	{
 		background-color: #777;
+		color: #fff;
 	}
 	td.tabseat1
 	{
@@ -113,8 +130,35 @@ table.tabs
 }
 table.display
 {
+	width: 95%;
 	border-collapse: collapse;
+	tr.gamepage, tr.gamelog, tr.chatlog
+	{
+		border: 3px solid #777;
+		background-color: #EEE;
+	}
+	tr.seat1
+	{
+		border: 3px solid $redbg;
+		background-color: lighten($redbg, 30%);
+	}
+	tr.seat2
+	{
+		border: 3px solid $greenbg;
+		background-color: lighten($greenbg, 30%);
+	}
+	tr.seat3
+	{
+		border: 3px solid $bluebg;
+		background-color: lighten($bluebg, 30%);
+	}
+	tr.seat4
+	{
+		border: 3px solid #777;
+		background-color: $whitebg;
+	}
 }
+
 table.resourcewheel
 {
 	border-collapse:collapse;
@@ -140,7 +184,7 @@ table.resourcewheel
 	}
 	tr:nth-child(odd)
 	{
-		background-color: #eee;
+		background-color: #ddd;
 	}
 	tr:nth-child(even)
 	{
@@ -195,7 +239,7 @@ table.buildings
 	}
 	tr:nth-child(odd)
 	{
-		background-color: #eee;
+		background-color: #ddd;
 	}
 	tr:nth-child(even)
 	{
@@ -231,7 +275,7 @@ table.districts_plots
 	}
 	tr:nth-child(odd)
 	{
-		background-color: #eee;
+		background-color: #ddd;
 	}
 	tr:nth-child(even)
 	{
@@ -261,6 +305,10 @@ table.resources
 	{
 		border: dotted 1px gray;
 		background-color: #9999CC
+	}
+	tr:nth-child(odd)
+	{
+		background-color: #fff;
 	}
 	tr:nth-child(even)
 	{

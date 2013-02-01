@@ -21,6 +21,7 @@ class GamesController < ApplicationController
 
   def show
     @game = Game.find(params[:id])
+    @current_seat = @game.find_seat_by_number(@game.current_seat_number) if @game.active
   end
 
   def join

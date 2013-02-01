@@ -16,9 +16,18 @@ class Game < ActiveRecord::Base
   scope :active, where('round > 0')
   scope :pending_users, where('round = 0')
 
+  def current_seat_number
+    (turn - 1) % number_of_players + 1
+  end
+
   def find_seat_by_user(user)
     nil if !user.is_a? User
     seats.where(:user_id => user.id).first
+  end
+
+  def find_seat_by_number(num)
+    nil if !num.is_a? Integer
+    seats.where(:number => num).first
   end
 
   def correct_number_of_users

@@ -9,7 +9,7 @@ class District < ActiveRecord::Base
   belongs_to :tile4, :class_name => 'BuildingCard', :foreign_key => "tile4_id"
 
   def tiles
-    [tile0, tile1, tile2, tile3, tile4].compact!
+    [[tile0, tile1, tile2, tile3, tile4]]
   end
 
 end

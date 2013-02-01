@@ -5,41 +5,51 @@
 - else
   h1 All my games
 
-table class='game'
+table.game
   thead
     tr
+      - if current_user.admin
+        th
+          |@
       th
         |#
       th
         |Game
       th colspan="2"
         |Variant
-      th
-        |Last play
-      th
-        |Round
-      th
-        |Age
-      th
-        |Current Player
-      th
-        |# of Players
-      th
-        |Players
+      - if params[:started] != 'n'
+        th
+          |Last play
+        th
+          |Round
+        th
+          |Age
+        th
+          |Turn
+        th
+          |Current Player
+      - if params[:started] == 'n'
+        th
+          |Created at
+        th
+          |# of Players
+        th
+          |Players
   tbody
     - @games.sort_by{|game| game.updated_at}.reverse.each do |game|
-      tr
+      tr class=(game.round > 0 && game.find_seat_by_number(game.current_seat_number).user == current_user ? "my_turn" : "" )
+        - if current_user.admin
+          td
+            img src="assets/delete.png" alt="Delete game" title="Delete game"
         td class="textright"
           = link_to game.id, game
         td
           = link_to game.name, game
         - if game.variant == GameVariant::FRANCE
           td class="variant-france no_border_right"
-            |France 
             img src="assets/france.png" alt="France" title="France"
         - elsif game.variant == GameVariant::IRELAND
           td class="variant-ireland no_border_right"
-            |Ireland 
             img src="assets/ireland.png" alt="Ireland" title="Ireland"
         - else
           td class="no_border_right"
@@ -49,24 +59,29 @@ table class='game'
             img src="assets/option_short.png" alt="Short game" title="Short game"
           - if game.use_loamy_landscape
             img src="assets/option_loamy.png" alt="Using Loamy Landscape card" title="Using Loamy Landscape card"
-        td
-          = game.updated_at.strftime('%Y-%m-%d %H:%M:%S')
-        td.textright
-          - if game.round > 0
-            = game.round
-        td class=(if game.round > 0 then game.map_age end)
-        td
-          - if game.round > 0
-            - @cs = game.seats.sort_by{|seat| seat.number}[game.turn % game.number_of_players - 1]
-            =' @cs.user.firstname
-            = @cs.user.lastname
-        td.textright
-          = game.number_of_players
-        td
-          -game.seats.sort_by{|seat| seat.number}.each do |seat|
-            =' seat.user.firstname
-            = seat.user.lastname
-            br
+        - if params[:started] != 'n'
+          td
+            = game.updated_at.strftime('%Y-%m-%d %H:%M:%S')
+          td.textright
+            - if game.round > 0
+              = game.round
+          td class=(if game.round > 0 then game.map_age end)
+          td.textright
+            = game.turn
+          td
+            - if game.round > 0
+              - @cs = game.seats.sort_by{|seat| seat.number}[game.turn % game.number_of_players - 1]
+              img src=("assets/seat_%s.png" % @cs.number)
+              = @cs.user.fullname
+        - if params[:started] == 'n'
+          td
+            = game.created_at.strftime('%Y-%m-%d %H:%M:%S')
+          td.textright
+            = game.number_of_players
+          td
+            -game.seats.sort_by{|seat| seat.number}.each do |seat|
+              = seat.user.fullname
+              br
 
 br
 

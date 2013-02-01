@@ -8,7 +8,7 @@ class Plot < ActiveRecord::Base
   belongs_to :tile11, :class_name => 'BuildingCard', :foreign_key => "tile11_id"
 
   def tiles
-    [tile00, tile10, tile01, tile11].compact!
+    [[tile00, tile10], [tile01, tile11]]
   end
 
 end

@@ -15,302 +15,323 @@ h1= @game.name
 
 
 - if @game.round > 0
-  table.tabs
-    tbody
-      tr class=(@game.variant == GameVariant::FRANCE ? "variant-france" : "variant-ireland")
-        td class="tabgame" onclick=("show('gamepage');%shide('gamelog');hide('chatlog');" % (1..@game.number_of_players).map { |n| "hide('seat%s');" % n }.join(""))
-          | Game Area
-        - @game.seats.sort_by{|seat| seat.number}.each do |seat|
-          td class=("tabseat%s" % seat.number) onclick=("hide('gamepage');%shide('gamelog');hide('chatlog');" % (1..@game.number_of_players).map { |n| "%s('seat%s');" % [(n == seat.number ? "show" : "hide"), n] }.join(""))
-            = seat.user.fullname
-        td class="tabgame" onclick=("hide('gamepage');%sshow('gamelog');hide('chatlog');" % (1..@game.number_of_players).map { |n| "hide('seat%s');" % n }.join(""))
-          | Game Log
-        td class="tabgame" onclick=("hide('gamepage');%shide('gamelog');show('chatlog');" % (1..@game.number_of_players).map { |n| "hide('seat%s');" % n }.join(""))
-          | Chat Log
+  
+  = simple_form_for @game do |f|
 
-  table.display
-    tr.gamepage id="gamepage" style=("display: %s;" % (@current_user ? "none" : ""))
-      td
-        div
-          ' Round:&nbsp;
-          b =' @game.round
-          ' &nbsp;Age:&nbsp;
-          img src="../assets/age_start.png" alt=@game.map_age title=@game.map_age
-          | &nbsp;Phase:&nbsp;
-          b =' @game.map_phase
-          ' &nbsp;Player's turn:&nbsp;
-          b =' @game.seats[@game.turn % @game.number_of_players].user.fullname
-          table.resourcewheel
-            tr
-              th colspan=7
-                | Resource production
-            tr
-              td
-                'Wood:
-                b = @game.wood_production
-              td
-                'Peat:
-                b = @game.peat_production
-              td
-                'Grain:
-                b = @game.grain_production
-              td
-                'Livestock:
-                b = @game.livestock_production
-              td
-                'Clay:
-                b = @game.clay_production
-              td
-                'Coin:
-                b = @game.coin_production
-              td
-                'Joker:
-                b = @game.joker_production
-            tr
-              td colspan=2
-                - if @game.stone_enters > 0
-                  'Stone:
-                  - if @game.wheel_stone_position > 0
-                    b = @game.stone_production
-                  else
-                    b =' (@game.stone_enters - @game.wheel_position + 1) % 13
-                    ' rounds
-              td colspan=2
-                - if @game.grape_enters > 0
-                  'Grapes:
-                  - if @game.wheel_grape_position > 0
-                    b = @game.grape_production
-                  else
-                    b =' (@game.grape_enters - @game.wheel_position + 1) % 13
-                    ' rounds
-              td colspan=3
-                'Rounds until settlement:
-                b = (@game.wheel_house_position - @game.wheel_position) % 13
-          hr
-            h3 Available buildings
-            table.buildings
-              thead
-                tr
-                  th Name
-                  th Locations
-                  th EV
-                  th DV
-                  th Age
-                  th Wood
-                  th Clay
-                  th Stone
-                  th Straw
-                  th Coin
-                  th Code
-              tbody
-                - @game.building_cards.each do |building_card|
-                  tr
-                    td class=(if building_card.is_cloister then "cloister" else "noncloister" end)
-                      = building_card.name
-                    td 
-                      = building_card.map_available_location_types.map { |t| t }.join(", ")
-                    td.textright
-                      = building_card.economic_value
-                    td.textright
-                      = building_card.dwelling_value
-                    td
-                      img src="../assets/age_start.png" alt=building_card.map_age title=building_card.map_age
-                    td.textright
-                      = building_card.cost_wood if building_card.cost_wood > 0
-                    td.textright
-                      = building_card.cost_clay if building_card.cost_clay > 0
-                    td.textright
-                      = building_card.cost_stone if building_card.cost_stone > 0
-                    td.textright
-                      = building_card.cost_straw if building_card.cost_straw > 0
-                    td.textright
-                      = building_card.cost_coin if building_card.cost_coin > 0
-                    td
-                      = building_card.key
-            table.buildings
-              thead
-                tr
-                  - @game.building_cards.each do |building_card|
-                    th class=(if building_card.is_cloister then "cloister" else "noncloister" end)
-                      = building_card.name
-              tbody
-                tr
-                  - @game.building_cards.each do |building_card|
-                    td
-                      ' EV:
-                      b =' building_card.economic_value
-                      ' DV:
-                      b =' building_card.dwelling_value
-                      br
-                      ' Age:
-                      img src="../assets/age_start.png" alt=building_card.map_age title=building_card.map_age
-                      br
-                      ' Loc:
-                      = building_card.map_available_location_types.map { |t| t[0] }.join(", ")
-                      br
-                      - if building_card.cost_wood > 0
-                        ' W:
-                        b =' building_card.cost_wood
-                      - if building_card.cost_clay > 0
-                        ' C:
-                        b =' building_card.cost_clay
-                      - if building_card.cost_stone > 0
-                        ' T:
-                        b =' building_card.cost_stone
-                      - if building_card.cost_straw > 0
-                        ' S:
-                        b =' building_card.cost_straw
-                      - if building_card.cost_coin > 0
-                        ' $:
-                        b =' building_card.cost_coin
-                      - if building_card.cost_fuel > 0
-                        ' U:
-                        b =' building_card.cost_fuel
-                      - if building_card.cost_food > 0
-                        ' F:
-                        b =' building_card.cost_food
-                      br
-                      = building_card.key
+    - if @current_seat.user == @current_user
+      | Action:
+      = select_tag "game[action_types]", options_for_select(@current_seat.available_action_types), { :onchange => "showSelect(this);" }
+      = select_tag "game[action_basic]", options_for_select(@current_seat.available_basic), { :style => "display: none;" }
+      = select_tag "game[action_build]", options_for_select(@current_seat.available_build), { :style => "display: none;" }
+      = select_tag "game[action_enter]", options_for_select(@current_seat.available_enter), { :style => "display: none;" }
+      = select_tag "game[action_contract]", options_for_select(@current_seat.available_contract), { :style => "display: none;" }
+      = select_tag "game[action_extra]", options_for_select(@current_seat.available_extra), { :style => "display: none;" }
 
-          hr
-            table.districts_plots
-              thead
-                tr
-                  th District costs
-                  th Plot costs
-              tbody
-                tr
-                  td
-                    = @game.districts.map { |d| "%s" % d.cost }.join(", ")
-                  td
-                    = @game.plots.map { |p| "%s" % p.cost }.join(", ")
-    - @game.seats.sort_by{|seat| seat.number}.each do |seat|
-      tr class=("seat%s" % seat.number) id=("seat%s" % seat.number) style=("display: %s;" % (seat.user == @current_user ? "" : "none"))
+      = f.submit 'Play'
+
+    br
+    table.tabs
+      tbody
+        tr class=(@game.variant == GameVariant::FRANCE ? "variant-france" : "variant-ireland")
+          td id="tabgamepage" class=(@current_user ? "tabgame" : "tabselected") onclick=("show('gamepage');change_style('tabgamepage','tabselected');%shide('gamelog');change_style('tabgamelog','tabgame');hide('chatlog');change_style('tabchatlog','tabgame');" % (1..@game.number_of_players).map { |n| "hide('seat%s');change_style('tabseat%s','tabseat%s');" % [n, n, n] }.join(""))
+            | Game Area
+          - @game.seats.sort_by{|seat| seat.number}.each do |seat|
+            td id=("tabseat%s" % seat.number) class=(seat.user == @current_user ? "tabselected" : "tabseat%s" % seat.number) onclick=("hide('gamepage');change_style('tabgamepage','tabgame');%shide('gamelog');change_style('tabgamelog','tabgame');hide('chatlog');change_style('tabchatlog','tabgame');" % (1..@game.number_of_players).map { |n| "%s('seat%s');change_style('tabseat%s','%s');" % [(n == seat.number ? "show" : "hide"), n, n, (n == seat.number ? "tabselected" : "tabseat%s" % n)] }.join(""))
+              = seat.user.fullname
+          td id="tabgamelog" class="tabgame" onclick=("hide('gamepage');change_style('tabgamepage','tabgame');%sshow('gamelog');change_style('tabgamelog','tabselected');hide('chatlog');change_style('tabchatlog','tabgame');" % (1..@game.number_of_players).map { |n| "hide('seat%s');change_style('tabseat%s','tabseat%s');" % [n, n, n] }.join(""))
+            | Game Log
+          td id="tabchatlog" class="tabgame" onclick=("hide('gamepage');change_style('tabgamepage','tabgame');%shide('gamelog');change_style('tabgamelog','tabgame');show('chatlog');change_style('tabchatlog','tabselected');" % (1..@game.number_of_players).map { |n| "hide('seat%s');change_style('tabseat%s','tabseat%s');" % [n, n, n] }.join(""))
+            | Chat Log
+
+    table.display
+      tr.gamepage id="gamepage" style=("display: %s;" % (@current_user ? "none" : ""))
         td
           div
-            h2 =' seat.user.fullname
-            table.resources
-              thead
-                tr
-                  th colspan=(@game.variant == GameVariant::FRANCE ? 11 : 10)
-                    |Available resources
-              tbody
-                tr
-                  td
-                    'Peat:
-                    b = seat.res_peat
-                  td
-                    'Livestock:
-                    b = seat.res_livestock
-                  td
-                    'Grain:
-                    b = seat.res_grain
-                  td
-                    'Wood:
-                    b = seat.res_wood
-                  td
-                    'Clay:
-                    b = seat.res_clay
-                  td
-                    'Coin:
-                    b = seat.res_coin
-                  td
-                    '5 Coins:
-                    b = seat.res_5coin
-                  td
+            ' Round:&nbsp;
+            b =' @game.round
+            ' &nbsp;Age:&nbsp;
+            img src="../assets/age_start.png" alt=@game.map_age title=@game.map_age
+            | &nbsp;Phase:&nbsp;
+            b =' @game.map_phase
+            ' &nbsp;Player's turn:&nbsp;
+            b =' @game.find_seat_by_number(@game.current_seat_number).user.fullname
+            table.resourcewheel
+              tr
+                th colspan=7
+                  | Resource production
+              tr
+                td
+                  'Wood:
+                  b = @game.wood_production
+                td
+                  'Peat:
+                  b = @game.peat_production
+                td
+                  'Grain:
+                  b = @game.grain_production
+                td
+                  'Livestock:
+                  b = @game.livestock_production
+                td
+                  'Clay:
+                  b = @game.clay_production
+                td
+                  'Coin:
+                  b = @game.coin_production
+                td
+                  'Joker:
+                  b = @game.joker_production
+              tr
+                td colspan=2
+                  - if @game.stone_enters > 0
                     'Stone:
-                    b = seat.res_stone
-                  - if @game.variant == GameVariant::FRANCE
+                    - if @game.wheel_stone_position > 0
+                      b = @game.stone_production
+                    else
+                      b =' (@game.stone_enters - @game.wheel_position + 1) % 13
+                      ' rounds
+                td colspan=2
+                  - if @game.grape_enters > 0
+                    'Grapes:
+                    - if @game.wheel_grape_position > 0
+                      b = @game.grape_production
+                    else
+                      b =' (@game.grape_enters - @game.wheel_position + 1) % 13
+                      ' rounds
+                td colspan=3
+                  'Settlement:
+                  b =' (@game.wheel_house_position - @game.wheel_position) % 13
+                  ' rounds
+              tr
+                th colspan=7
+                  | Production growth
+              tr
+                td colspan=7
+                  = @game.production_list.map { |d| d.to_s }.join(", ")
+            hr
+              h3 Available buildings
+              table.buildings
+                thead
+                  tr
+                    th Name
+                    th Locations
+                    th EV
+                    th DV
+                    th Age
+                    th Wood
+                    th Clay
+                    th Stone
+                    th Straw
+                    th Coin
+                    th Code
+                tbody
+                  - @game.building_cards.each do |building_card|
+                    tr
+                      td class=(if building_card.is_cloister then "cloister" else "noncloister" end)
+                        = building_card.name
+                      td 
+                        = building_card.map_available_location_types.map { |t| t }.join(", ")
+                      td.textright
+                        = building_card.economic_value
+                      td.textright
+                        = building_card.dwelling_value
+                      td
+                        img src="../assets/age_start.png" alt=building_card.map_age title=building_card.map_age
+                      td.textright
+                        = building_card.cost_wood if building_card.cost_wood > 0
+                      td.textright
+                        = building_card.cost_clay if building_card.cost_clay > 0
+                      td.textright
+                        = building_card.cost_stone if building_card.cost_stone > 0
+                      td.textright
+                        = building_card.cost_straw if building_card.cost_straw > 0
+                      td.textright
+                        = building_card.cost_coin if building_card.cost_coin > 0
+                      td
+                        = building_card.key
+              table.buildings
+                thead
+                  tr
+                    - @game.building_cards.each do |building_card|
+                      th class=(if building_card.is_cloister then "cloister" else "noncloister" end)
+                        = building_card.name
+                tbody
+                  tr
+                    - @game.building_cards.each do |building_card|
+                      td
+                        ' EV:
+                        b =' building_card.economic_value
+                        ' DV:
+                        b =' building_card.dwelling_value
+                        br
+                        ' Age:
+                        img src="../assets/age_start.png" alt=building_card.map_age title=building_card.map_age
+                        br
+                        ' Loc:
+                        = building_card.map_available_location_types.map { |t| t[0] }.join(", ")
+                        br
+                        - if building_card.cost_wood > 0
+                          ' W:
+                          b =' building_card.cost_wood
+                        - if building_card.cost_clay > 0
+                          ' C:
+                          b =' building_card.cost_clay
+                        - if building_card.cost_stone > 0
+                          ' T:
+                          b =' building_card.cost_stone
+                        - if building_card.cost_straw > 0
+                          ' S:
+                          b =' building_card.cost_straw
+                        - if building_card.cost_coin > 0
+                          ' $:
+                          b =' building_card.cost_coin
+                        - if building_card.cost_fuel > 0
+                          ' U:
+                          b =' building_card.cost_fuel
+                        - if building_card.cost_food > 0
+                          ' F:
+                          b =' building_card.cost_food
+                        br
+                        = building_card.key
+
+            hr
+              table.districts_plots
+                thead
+                  tr
+                    th District costs
+                    th Plot costs
+                tbody
+                  tr
                     td
-                      'Grapes:
-                      b = seat.res_grapes
+                      = @game.districts.map { |d| "%s" % d.cost }.join(", ")
                     td
-                      'Flour:
-                      b = seat.res_flour
-                  - if @game.variant == GameVariant::IRELAND
+                      = @game.plots.map { |p| "%s" % p.cost }.join(", ")
+      - @game.seats.sort_by{|seat| seat.number}.each do |seat|
+        tr class=("seat%s" % seat.number) id=("seat%s" % seat.number) style=("display: %s;" % (seat.user == @current_user ? "" : "none"))
+          td
+            div
+              h2 =' seat.user.fullname
+              table.resources
+                thead
+                  tr
+                    th colspan=(@game.variant == GameVariant::FRANCE ? 11 : 10)
+                      |Available resources
+                tbody
+                  tr
                     td
-                      'Malt:
-                      b = seat.res_malt
-                  td
-                    'Wonder:
-                    b = seat.res_wonder
-                tr
-                  td
-                    'Peatcoal:
-                    b = seat.res_peatcoal
-                  td
-                    'Meat:
-                    b = seat.res_meat
-                  td
-                    'Straw:
-                    b = seat.res_straw
-                  td
+                      'Peat:
+                      b = seat.res_peat
+                    td
+                      'Livestock:
+                      b = seat.res_livestock
+                    td
+                      'Grain:
+                      b = seat.res_grain
+                    td
+                      'Wood:
+                      b = seat.res_wood
+                    td
+                      'Clay:
+                      b = seat.res_clay
+                    td
+                      'Coin:
+                      b = seat.res_coin
+                    td
+                      '5 Coins:
+                      b = seat.res_5coin
+                    td
+                      'Stone:
+                      b = seat.res_stone
+                    - if @game.variant == GameVariant::FRANCE
+                      td
+                        'Grapes:
+                        b = seat.res_grapes
+                      td
+                        'Flour:
+                        b = seat.res_flour
                     - if @game.variant == GameVariant::IRELAND
-                      'Whiskey:
-                      b = seat.res_whiskey
-                  td
-                    'Ceramic:
-                    b = seat.res_ceramic
-                  td
-                    'Book:
-                    b = seat.res_book
-                  td
-                    'Reliquery:
-                    b = seat.res_reliquery
-                  td
-                    'Ornament:
-                    b = seat.res_ornament
-                  - if @game.variant == GameVariant::FRANCE
+                      td
+                        'Malt:
+                        b = seat.res_malt
                     td
-                      'Wine:
-                      b = seat.res_wine
+                      'Wonder:
+                      b = seat.res_wonder
+                  tr
                     td
-                      'Bread:
-                      b = seat.res_bread
-                  - if @game.variant == GameVariant::IRELAND
+                      'Peatcoal:
+                      b = seat.res_peatcoal
                     td
-                      'Beer:
-                      b = seat.res_beer
-                  td
-            br
-            table.board
+                      'Meat:
+                      b = seat.res_meat
+                    td
+                      'Straw:
+                      b = seat.res_straw
+                    td
+                      - if @game.variant == GameVariant::IRELAND
+                        'Whiskey:
+                        b = seat.res_whiskey
+                    td
+                      'Ceramic:
+                      b = seat.res_ceramic
+                    td
+                      'Book:
+                      b = seat.res_book
+                    td
+                      'Reliquery:
+                      b = seat.res_reliquery
+                    td
+                      'Ornament:
+                      b = seat.res_ornament
+                    - if @game.variant == GameVariant::FRANCE
+                      td
+                        'Wine:
+                        b = seat.res_wine
+                      td
+                        'Bread:
+                        b = seat.res_bread
+                    - if @game.variant == GameVariant::IRELAND
+                      td
+                        'Beer:
+                        b = seat.res_beer
+                    td
+              br
+              table.board
+                tr
+                  td rowspan="2"
+                    table.heartland
+                      tr
+                        td class=(seat.tile00.key if seat.tile00 != nil)
+                        td class=(seat.tile01.key if seat.tile01 != nil)
+                        td class=(seat.tile02.key if seat.tile02 != nil)
+                        td class=(seat.tile03.key if seat.tile03 != nil)
+                        td class=(seat.tile04.key if seat.tile04 != nil)
+                      tr
+                        td class=(seat.tile10.key if seat.tile10 != nil)
+                        td class=(seat.tile11.key if seat.tile11 != nil)
+                        td class=(seat.tile12.key if seat.tile12 != nil)
+                        td class=(seat.tile13.key if seat.tile13 != nil)
+                        td class=(seat.tile14.key if seat.tile14 != nil)
+      tr.gamelog id="gamelog" style=("display: none;")
+        td
+          | The game log goes here
+      tr.chatlog id="chatlog" style=("display: none;")
+        td
+          h3 Game chat log
+          - if @current_user && @game.find_seat_by_user(@current_user)
+            = simple_form_for :chatlog do |fc|
+              = fc.input :message, :required => true, :label => false, :as => :text, :input_html => { :rows => 5, :cols => 60 }
+              = fc.submit 'Post message'
+          br
+          table.chatlog
+            thead
               tr
-                td rowspan="2"
-                  table.heartland
-                    tr
-                      td class=(seat.tile00.key if seat.tile00 != nil)
-                      td class=(seat.tile01.key if seat.tile01 != nil)
-                      td class=(seat.tile02.key if seat.tile02 != nil)
-                      td class=(seat.tile03.key if seat.tile03 != nil)
-                      td class=(seat.tile04.key if seat.tile04 != nil)
-                    tr
-                      td class=(seat.tile10.key if seat.tile10 != nil)
-                      td class=(seat.tile11.key if seat.tile11 != nil)
-                      td class=(seat.tile12.key if seat.tile12 != nil)
-                      td class=(seat.tile13.key if seat.tile13 != nil)
-                      td class=(seat.tile14.key if seat.tile14 != nil)
-    tr.gamelog id="gamelog" style=("display: none;")
-      td
-        | The game log goes here
-    tr.chatlog id="chatlog" style=("display: none;")
-      td
-        h3 Game chat log
-        - if @current_user && @game.find_seat_by_user(@current_user)
-          = simple_form_for :chatlog do |f|
-            = f.input :message, :required => true, :label => false, :as => :text, :input_html => { :rows => 5, :cols => 50 }
-            = f.submit 'Post message'
-        br
-        table.chatlog
-          thead
-            tr
-              th Timestamp
-              th Player
-              th Text
-          tbody
-            - @game.chatlogs.sort_by{|chatlog| chatlog.timestamp}.reverse.each do |chatlog|
-              tr
-                td width="110px" = chatlog.timestamp.strftime('%Y-%m-%d %H:%M:%S')
-                td width="110px" class=("seat%s" % chatlog.seat.number) 
-                  = chatlog.seat.user.fullname
-                td = chatlog.message
-    hr
+                th Timestamp
+                th Player
+                th Text
+            tbody
+              - @game.chatlogs.sort_by{|chatlog| chatlog.timestamp}.reverse.each do |chatlog|
+                tr
+                  td width="110px" = chatlog.timestamp.strftime('%Y-%m-%d %H:%M:%S')
+                  td width="110px" class=("seat%s" % chatlog.seat.number) 
+                    = chatlog.seat.user.fullname
+                  td = chatlog.message
