@@ -3,7 +3,7 @@ class AddDistrictAndPlot < ActiveRecord::Migration
     create_table :districts do |t|
       t.references :districtable, :polymorphic => true
       t.integer :cost
-      t.integer :side
+      t.integer :side, :default => 0
       t.integer :position_x
       t.integer :position_y
       t.integer :tile0_id, :default => nil
@@ -27,7 +27,7 @@ class AddDistrictAndPlot < ActiveRecord::Migration
     create_table :plots do |t|
       t.references :plotable, :polymorphic => true
       t.integer :cost
-      t.integer :side
+      t.integer :side, :default => 0
       t.integer :position_x
       t.integer :position_y
       t.integer :tile00_id, :default => nil

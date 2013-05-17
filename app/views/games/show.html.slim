@@ -18,16 +18,276 @@ h1= @game.name
   
   = simple_form_for @game do |f|
 
-    - if @current_seat.user == @current_user
-      | Action:
-      = select_tag "game[action_types]", options_for_select(@current_seat.available_action_types), { :onchange => "showSelect(this);" }
-      = select_tag "game[action_basic]", options_for_select(@current_seat.available_basic), { :style => "display: none;" }
-      = select_tag "game[action_build]", options_for_select(@current_seat.available_build), { :style => "display: none;" }
-      = select_tag "game[action_enter]", options_for_select(@current_seat.available_enter), { :style => "display: none;" }
-      = select_tag "game[action_contract]", options_for_select(@current_seat.available_contract), { :style => "display: none;" }
-      = select_tag "game[action_extra]", options_for_select(@current_seat.available_extra), { :style => "display: none;" }
+    input type="hidden" id="game_selected_tiles" name="game[selected_tiles]" value=""
+    input type="hidden" id="game_landscape_position_x" name="game[landscape_position_x]" value=""
+    input type="hidden" id="game_landscape_position_y" name="game[landscape_position_y]" value=""
+    input type="hidden" id="paintable_locations" value=@paintable_locations.join(":")
 
-      = f.submit 'Play'
+    div.actions
+      - if @current_seat && @current_seat.user == @current_user
+        ' Action:
+        - case @game.actioncode
+        - when SubturnActionCode::CHOOSE_TILE_LOCATIONS
+          ' Choosing tile locations
+          = @select_tiles
+          - if @select_tiles[0]
+            = select_tag "game[action_enter_unbuilt]", options_from_collection_for_select(@select_tiles[0], "id", "name")
+        - when SubturnActionCode::CHOOSE_PRODUCTION_TOKENS
+          ' Choosing production token
+          = select_tag "game[action_production_token]", options_for_select(@game.available_tokens(@select_tokens))
+        - when SubturnActionCode::CHOOSE_CLERGY_MEMBER
+          ' Choosing clergy to use at 
+          = @building_card.name
+          ' :
+          = select_tag "game[action_clergy_member]", options_for_select(@clergy_members)
+        - when SubturnActionCode::DECIDE_ENTER_BUILDING
+          ' Do you want to place your Prior in
+          = @building_card.name
+          ' ?
+          = select_tag "game[action_use_prior]", options_for_select(["Yes", "No"])
+        - when SubturnActionCode::CHOOSE_BUILDING_ACTION
+          = render :partial => "spend", :locals => { :activities => @activities }
+        - when SubturnActionCode::PLACE_LANDSCAPE
+          - if @landscape.is_a? District
+            ' Choose side for landscape:
+            = select_tag "game[action_landscape_side]", options_for_select([["Moor/Forest/Forest/Hillside/Hillside", 0], ["Forest/Plains/Plains/Plains/Hillside", 1]]), { :onchange => "showDistrict(this, %s);" % @landscape.cost }
+        - when SubturnActionCode::CHOOSE_RESOURCES
+          - case @resource_mode
+          - when SubturnResourceMode::UNIQUES
+            table
+              tr
+                th
+                  - if @resource_spend_count > 0
+                    ' Choose 
+                    =' @resource_spend_count
+                    ' unique resources to spend:
+                  - else
+                    ' Spend resource?
+                th
+                - @resource_gain_multiplier.each do |rgm|
+                  th
+                    ' Choose resource to gain:
+                  - if @resource_gain_multiplier.last != rgm
+                    th width="10"
+              tr
+                td valign="top"
+                  - @resource_spend.each do |rs|
+                    = check_box_tag "game[resource_spend][]", rs.first, false, { :onclick => "selectResourceSpend(this, %s);" % @resource_spend_count }
+                    = @game.map_resource(rs.first)
+                    br
+                td valign="center"
+                  img src=("../assets/convert%sx.png" % @resource_convert_max) alt=("%s times" % [@resource_convert_max == 0 ? "unlimited" : @resource_convert_max]) title=("%s times" % [@resource_convert_max == 0 ? "unlimited" : @resource_convert_max])
+                - @resource_gain_multiplier.each do |rgm|
+                  td id=("tdResourceGain_%s" % @resource_gain_multiplier.index(rgm)) valign="top"
+                    - @resource_gain.each do |rs|
+                      = radio_button_tag ("game[resource_gain_%s][]" % @resource_gain_multiplier.index(rgm)), rs.first, false, { :onclick => "selectResourceGain(this, %s, %s, %s);" % [rs.first, @resource_gain_multiplier.length, @resource_gain_unique] }
+                      =' rgm
+                      = @game.map_resource(rs.first)
+                      br
+                  - if @resource_gain_multiplier.last != rgm
+                    td
+              - if @resource_spend_count > 0
+                tr
+                  td
+                    ' Selected:
+                    span.invalid id="resource_spend_checked_count"
+                      '0
+                  td
+                  td
+          - when SubturnResourceMode::FUEL_FOOD
+            |Choose resources to spend:
+            table
+              tr valign="top"
+                td
+                  table.resources id="tbl_game_resource_spend_fuel" border=0 style="border-collapse: collapse;"
+                    thead
+                      tr
+                        th colspan="4" Fuels
+                    tbody
+                      - @resource_spend[:fuel].each do |rs|
+                        tr
+                          td
+                            =' @game.map_resource(rs.first)
+                            |(
+                            b = @current_seat.get_resource(rs.first)
+                            - if rs.first == Resource::STRAW
+                              |+
+                              b = @current_seat.get_resource(Resource::GRAIN)
+                            |)
+                          td width="16"
+                            img id=("game_resource_spend_%s_down" % rs.first) src="../assets/arrow_left.png" style="cursor: pointer; display: none;" onclick=("spend_down(game_resource_spend_%s);" % rs.first)
+                          td
+                            input type="text" id=("game_resource_spend_%s" % rs.first) name=("game[resource_spend_%s]" % rs.first) value="0" size="2" style="text-align: right;" onchange=("spend_update(this, %s);" % rs.last)
+                          td width="16"
+                            img id=("game_resource_spend_%s_up" % rs.first) src="../assets/arrow_right.png" style="cursor: pointer;" onclick=("spend_up(game_resource_spend_%s, %s);" % rs)
+                td width="35px"
+                - if @resource_spend[:food]
+                  td
+                    table.resources id="tbl_game_resource_spend_food" border=0 style="border-collapse: collapse;"
+                      thead
+                        tr
+                          th colspan="4" Foods
+                      tbody
+                        - @resource_spend[:food].each do |rs|
+                          tr
+                            td
+                              =' @game.map_resource(rs.first)
+                              |(
+                              b = rs.last
+                              |)
+                            td width="16"
+                              img id=("game_resource_spend_%s_down" % rs.first) src="../assets/arrow_left.png" style="cursor: pointer; display: none;" onclick=("spend_down(game_resource_spend_%s);" % rs.first)
+                            td
+                              input type="text" id=("game_resource_spend_%s" % rs.first) name=("game[resource_spend_%s]" % rs.first) value="0" size="2" style="text-align: right;" onchange=("spend_update(this, %s);" % rs.last)
+                            td width="16"
+                              img id=("game_resource_spend_%s_up" % rs.first) src="../assets/arrow_right.png" style="cursor: pointer;" onclick=("spend_up(game_resource_spend_%s, %s);" % rs)
+              - if @resource_needed.length > 0
+                tr
+                  td
+                    - if @resource_needed[:fuel]
+                      |Fuel needed: 
+                      span id="resource_spend_50_needed" style="font-weight: bold;"
+                        = @resource_needed[:fuel]
+                      |&nbsp;Spent: 
+                      span.invalid id="resource_spend_50_count"
+                        '0
+                  td
+                  - if @resource_needed[:food]
+                    td
+                      |Food needed: 
+                      span id="resource_spend_51_needed" style="font-weight: bold;"
+                        = @resource_needed[:food]
+                      |&nbsp;Spent: 
+                      span.invalid id="resource_spend_51_count"
+                        '0
+              - else
+                tr
+                  td colspan="3"
+                    input type="hidden" id="resource_gain_steps" value=(@resource_gain.map{|rg| "%s:%s" % [rg.first, rg.last.map {|r| '%s=%s' % [r.first.join('/'), r.last]}.join(",")]}.join(";"))
+                    table.resources width="150"
+                      thead
+                        tr
+                          th colspan=(@resource_spend.length) Spending
+                          th width="20px" &nbsp;
+                          th colspan=(@resource_gain.length) Gaining
+                        tr
+                          th Fuel
+                          th Food
+                          th
+                          - @resource_gain.each do |rg|
+                            th
+                              = @game.map_resource(rg.first)
+                      tbody
+                        tr
+                          - if @resource_spend[:fuel]
+                            td.textright
+                              span.valid id="resource_spend_50_count"
+                                '0
+                          - if @resource_spend[:food]
+                            td.textright
+                              span.valid id="resource_spend_51_count"
+                                '0
+                          td
+                          - @resource_gain.each do |rg|
+                            td.textright
+                              span.valid id=("resource_gain_%s" % rg.first)
+                                '0
+          - when SubturnResourceMode::OPTIONS
+            | Choose resources to gain:
+            table
+              tr
+                - @resource_options.each do |rg|
+                  td valign="top"
+                    table
+                      - rg.each do |res|
+                        tr
+                          td
+                            = radio_button_tag ("game[resource_gain_%s][]" % @resource_options.index(rg)), res.first, rg.count == 1
+                            =' res.last
+                            = @game.map_resource(res.first)
+                  - if @resource_options.last != rg
+                    td width="10px" style="background-color: #999;"
+          - when SubturnResourceMode::VPS
+            | Choose VP tiles to gain:
+            table style="border: 1px solid black; border-collapse: collapse;"
+              tr valign="top" style="text-align: center; border: 0px;"
+                th
+                  |Resources
+                  input type="hidden" id="resource_gain_keys" value=(@resource_gain.map{|g| g.first}.join(','))
+                th colspan="3"
+                  |To gain: 
+                  span id="resource_gain_max" class=(@resource_gain_max > 0 ? "warning" : "valid")
+                    = @resource_gain_max
+              - @resource_gain.each do |rg|
+                tr style="border: 0px;"
+                  td
+                    =' @game.map_resource(rg.first)
+                    |(
+                    span id=("resource_gain_count_%s" % rg.first) style="font-weight: bold;"
+                      = rg.last
+                    |)
+                    td width="16"
+                      img id=("game_resource_gain_%s_down" % rg.first) src="../assets/arrow_left.png" style="cursor: pointer; display: none;" onclick=("gain_down(%s);" % rg.first)
+                    td
+                      input type="text" id=("game_resource_gain_%s" % rg.first) name=("game[resource_gain_%s]" % rg.first) value="0" size="2" style="text-align: right;" onchange=("gain_update(%s);" % rg.first)
+                    td width="16"
+                      img id=("game_resource_gain_%s_up" % rg.first) src="../assets/arrow_right.png" style="cursor: pointer;" onclick=("gain_up(%s);" % rg.first)
+              tr
+                td Total
+                td
+                td style="text-align: right;"
+                  span id=("resource_gain_%s" % Resource::VP) class=(@resource_gain_max > 0 ? "warning" : "valid")
+                    '0
+                td
+          - when SubturnResourceMode::SPEND_CHOICES
+            |Choose work contract payment:
+            table
+              tr
+                td valign="top" style="text-align: left; border: 1px solid black;"
+                  - @resource_spend.each do |rs|
+                    = radio_button_tag "game[resource_spend][]", rs.first, false
+                    =' rs.last.first 
+                    =' @game.map_resource(rs.first)
+                    | to 
+                    =' rs.last.last
+                    br
+        - when SubturnActionCode::BUILD_BUILDING
+          input id="game_action_types" name="game[action_types]" type="hidden" value="203"
+          = select_tag "game[action_build]", options_for_select(@build_building)
+        - when SubturnActionCode::CONVERT_RESOURCES
+          table.resources border="0" style="border-collapse: collapse;"
+            thead
+              tr
+                th colspan="4" Convert Resources
+                th colspan="2" To
+            tbody
+              - @activities.each do |conv|
+                tr
+                  td
+                    =' @game.map_resource(conv.last[0])
+                    |(
+                    b = conv.last[1]
+                    |)
+                  td width="16"
+                    img id=("game_resource_spend_%s_down" % conv.last[0]) src="../assets/arrow_left.png" style="cursor: pointer; display: none;" onclick=("spend_down(game_resource_spend_%s);" % conv.last[0])
+                  td
+                    input type="text" id=("game_resource_spend_%s" % conv.last[0]) name=("game[resource_spend_%s]" % conv.last[0]) value="0" size="2" style="text-align: right;" onchange=("spend_update(this, %s);" % conv.last[1])
+                  td width="16"
+                    img id=("game_resource_spend_%s_up" % conv.last[0]) src="../assets/arrow_right.png" style="cursor: pointer;" onclick=("spend_up(game_resource_spend_%s, %s);" % [conv.last[0], conv.last[1]])
+                  td =' @game.map_resource(conv.last[2])
+                  td
+                    span id=("game_resource_gain_%s" % conv.last[2]) 0
+          input type="hidden" id="resource_gain_factors" value=(@activities.map{|a| '%s:%s:%s' % [a.last[0], a.last[3], a.last[2]]}.join('|'))
+        - else
+          = select_tag "game[action_types]", options_for_select(@current_seat.available_action_types), { :onchange => "showSelect(this);" }
+          = select_tag "game[action_basic]", options_for_select(@current_seat.available_basic), { :style => "display: none;" }
+          = select_tag "game[action_build]", options_for_select(@current_seat.available_build), { :style => "display: none;" }
+          = select_tag "game[action_enter]", grouped_options_for_select(@current_seat.available_enter), { :style => "display: none;" }
+          = select_tag "game[action_contract]", grouped_options_for_select(@current_seat.available_contract), { :style => "display: none;" }
+          = select_tag "game[action_extra]", options_for_select(@current_seat.available_extra), { :style => "display: none;" }
+
+        = f.submit 'Play', :id => "bPlay"
+        /, :style => ("display: none;" if 
 
     br
     table.tabs
@@ -50,11 +310,18 @@ h1= @game.name
             ' Round:&nbsp;
             b =' @game.round
             ' &nbsp;Age:&nbsp;
-            img src="../assets/age_start.png" alt=@game.map_age title=@game.map_age
+            - case @game.age
+            - when Game::Age::START
+              img src="../assets/age_start.png" alt=@game.map_age title=@game.map_age
+            - else
+              b = @game.map_age
             | &nbsp;Phase:&nbsp;
             b =' @game.map_phase
-            ' &nbsp;Player's turn:&nbsp;
-            b =' @game.find_seat_by_number(@game.current_seat_number).user.fullname
+            - if @game.phase != Phase::ENDGAME
+              ' &nbsp;Player's turn:&nbsp;
+              b =' @game.find_seat_by_number(@game.current_seat_number).user.fullname
+              ' &nbsp;Actions remaining:&nbsp;
+              b =' @game.actions_remaining
             table.resourcewheel
               tr
                 th colspan=7
@@ -83,25 +350,29 @@ h1= @game.name
                   b = @game.joker_production
               tr
                 td colspan=2
-                  - if @game.stone_enters > 0
+                  - if @game.wheel_stone_position > 0
                     'Stone:
-                    - if @game.wheel_stone_position > 0
-                      b = @game.stone_production
-                    else
-                      b =' (@game.stone_enters - @game.wheel_position + 1) % 13
-                      ' rounds
+                    b = @game.stone_production
+                  - elsif @game.stone_enters > 0
+                    'Stone:
+                    b =' (@game.stone_enters - @game.wheel_position + 1)
+                    ' rounds
                 td colspan=2
-                  - if @game.grape_enters > 0
+                  - if @game.wheel_grape_position > 0
                     'Grapes:
-                    - if @game.wheel_grape_position > 0
-                      b = @game.grape_production
-                    else
-                      b =' (@game.grape_enters - @game.wheel_position + 1) % 13
-                      ' rounds
+                    b = @game.grape_production
+                  - elsif @game.grape_enters > 0
+                    'Grapes:
+                    b =' (@game.grape_enters - @game.wheel_position + 1)
+                    ' rounds
                 td colspan=3
-                  'Settlement:
-                  b =' (@game.wheel_house_position - @game.wheel_position) % 13
-                  ' rounds
+                  - if @game.wheel_house_position > 0
+                    'Settlement:
+                    b =' (@game.wheel_house_position - @game.wheel_position)
+                    ' rounds
+                  - else
+                    'Buildings left:
+                    b =' (@game.building_cards.length)
               tr
                 th colspan=7
                   | Production growth
@@ -125,30 +396,25 @@ h1= @game.name
                     th Coin
                     th Code
                 tbody
-                  - @game.building_cards.each do |building_card|
+                  - @game.building_cards.sort_by{|b| b.id}.each do |building_card|
                     tr
                       td class=(if building_card.is_cloister then "cloister" else "noncloister" end)
                         = building_card.name
-                      td 
-                        = building_card.map_available_location_types.map { |t| t }.join(", ")
-                      td.textright
-                        = building_card.economic_value
-                      td.textright
-                        = building_card.dwelling_value
+                      td = building_card.map_available_location_types.map { |t| t }.join(", ")
+                      td.textright = building_card.economic_value
+                      td.textright = building_card.dwelling_value
                       td
-                        img src="../assets/age_start.png" alt=building_card.map_age title=building_card.map_age
-                      td.textright
-                        = building_card.cost_wood if building_card.cost_wood > 0
-                      td.textright
-                        = building_card.cost_clay if building_card.cost_clay > 0
-                      td.textright
-                        = building_card.cost_stone if building_card.cost_stone > 0
-                      td.textright
-                        = building_card.cost_straw if building_card.cost_straw > 0
-                      td.textright
-                        = building_card.cost_coin if building_card.cost_coin > 0
-                      td
-                        = building_card.key
+                        - case building_card.age
+                        - when Game::Age::START
+                          img src="../assets/age_start.png" alt=building_card.map_age title=building_card.map_age
+                        - else
+                          b = building_card.map_age
+                      td.textright = building_card.cost_wood if building_card.cost_wood > 0
+                      td.textright = building_card.cost_clay if building_card.cost_clay > 0
+                      td.textright = building_card.cost_stone if building_card.cost_stone > 0
+                      td.textright = building_card.cost_straw if building_card.cost_straw > 0
+                      td.textright = building_card.cost_coin if building_card.cost_coin > 0
+                      td = building_card.key
               table.buildings
                 thead
                   tr
@@ -165,7 +431,11 @@ h1= @game.name
                         b =' building_card.dwelling_value
                         br
                         ' Age:
-                        img src="../assets/age_start.png" alt=building_card.map_age title=building_card.map_age
+                        - case building_card.age
+                        - when Game::Age::START
+                          img src="../assets/age_start.png" alt=building_card.map_age title=building_card.map_age
+                        - else
+                          b = building_card.map_age
                         br
                         ' Loc:
                         = building_card.map_available_location_types.map { |t| t[0] }.join(", ")
@@ -203,114 +473,13 @@ h1= @game.name
                 tbody
                   tr
                     td
-                      = @game.districts.map { |d| "%s" % d.cost }.join(", ")
+                      = @game.districts.sort_by{|d| d.id}.map { |d| "%s" % d.cost }.join(", ")
                     td
-                      = @game.plots.map { |p| "%s" % p.cost }.join(", ")
+                      = @game.plots.sort_by{|p| p.id}.map { |p| "%s" % p.cost }.join(", ")
       - @game.seats.sort_by{|seat| seat.number}.each do |seat|
         tr class=("seat%s" % seat.number) id=("seat%s" % seat.number) style=("display: %s;" % (seat.user == @current_user ? "" : "none"))
           td
-            div
-              h2 =' seat.user.fullname
-              table.resources
-                thead
-                  tr
-                    th colspan=(@game.variant == GameVariant::FRANCE ? 11 : 10)
-                      |Available resources
-                tbody
-                  tr
-                    td
-                      'Peat:
-                      b = seat.res_peat
-                    td
-                      'Livestock:
-                      b = seat.res_livestock
-                    td
-                      'Grain:
-                      b = seat.res_grain
-                    td
-                      'Wood:
-                      b = seat.res_wood
-                    td
-                      'Clay:
-                      b = seat.res_clay
-                    td
-                      'Coin:
-                      b = seat.res_coin
-                    td
-                      '5 Coins:
-                      b = seat.res_5coin
-                    td
-                      'Stone:
-                      b = seat.res_stone
-                    - if @game.variant == GameVariant::FRANCE
-                      td
-                        'Grapes:
-                        b = seat.res_grapes
-                      td
-                        'Flour:
-                        b = seat.res_flour
-                    - if @game.variant == GameVariant::IRELAND
-                      td
-                        'Malt:
-                        b = seat.res_malt
-                    td
-                      'Wonder:
-                      b = seat.res_wonder
-                  tr
-                    td
-                      'Peatcoal:
-                      b = seat.res_peatcoal
-                    td
-                      'Meat:
-                      b = seat.res_meat
-                    td
-                      'Straw:
-                      b = seat.res_straw
-                    td
-                      - if @game.variant == GameVariant::IRELAND
-                        'Whiskey:
-                        b = seat.res_whiskey
-                    td
-                      'Ceramic:
-                      b = seat.res_ceramic
-                    td
-                      'Book:
-                      b = seat.res_book
-                    td
-                      'Reliquery:
-                      b = seat.res_reliquery
-                    td
-                      'Ornament:
-                      b = seat.res_ornament
-                    - if @game.variant == GameVariant::FRANCE
-                      td
-                        'Wine:
-                        b = seat.res_wine
-                      td
-                        'Bread:
-                        b = seat.res_bread
-                    - if @game.variant == GameVariant::IRELAND
-                      td
-                        'Beer:
-                        b = seat.res_beer
-                    td
-              br
-              table.board
-                tr
-                  td rowspan="2"
-                    table.heartland
-                      tr
-                        td class=(seat.tile00.key if seat.tile00 != nil)
-                        td class=(seat.tile01.key if seat.tile01 != nil)
-                        td class=(seat.tile02.key if seat.tile02 != nil)
-                        td class=(seat.tile03.key if seat.tile03 != nil)
-                        td class=(seat.tile04.key if seat.tile04 != nil)
-                      tr
-                        td class=(seat.tile10.key if seat.tile10 != nil)
-                        td class=(seat.tile11.key if seat.tile11 != nil)
-                        td class=(seat.tile12.key if seat.tile12 != nil)
-                        td class=(seat.tile13.key if seat.tile13 != nil)
-                        td class=(seat.tile14.key if seat.tile14 != nil)
+            = render :partial => "seat_board", :locals => { :seat => seat }
       tr.gamelog id="gamelog" style=("display: none;")
         td
           | The game log goes here

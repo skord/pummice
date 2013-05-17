@@ -1,0 +1,366 @@
+table border=0
+  tr
+    td style="text-align: center; border: 1px solid black;"
+      table width="100%"
+        - if @activities[0][:spend_type] != :none
+          thead
+            tr
+              th style="text-align: left;"
+                - case @activities[0][:spend_type]
+                - when :unique
+                  | Select exactly 
+                  =' @activities[0][:spend_count]
+                  | resources to spend
+              - if @activities[0][:spend_type] != :none
+                th
+              - @activities[0][:gains].each do |gain|
+                th
+                  - case gain[:gain_type]
+                  - when :choice
+                    | Select resource to gain
+        tbody
+          tr
+            - if @activities[0][:spend_type] != :none
+              td
+                table
+                  - case @activities[0][:spend_type]
+                  - when :exact, :exact_fuel, :fuel_food
+                    - @activities[0][:spend_resources].each do |spend_res|
+                      tr
+                        td
+                          - if @activities[0][:spend_resources].any?{|x| x.last > 1 } || @activities[0][:gains].map{|gain| gain[:gain_resources].count{|x| x.last > 1 }}.reduce(:+) > 0 || spend_res.last < 1
+                            - if spend_res.last == 0.5
+                              |1/2 
+                            - else
+                              =' spend_res.last
+                          = @game.map_resource(spend_res.first)
+                  - when :unique
+                    tr
+                      td style="text-align: left;"
+                        - @activities[0][:spend_resources].each do |rs|
+                          = check_box_tag "game[resource_spend][]", rs.first, false, { :onclick => "selectResourceSpend(this, %s);" % @activities[0][:spend_count] }
+                          = @game.map_resource(rs.first)
+                          br
+                  - when :fuel_steps
+                    tr
+                      td style="text-align: left;"
+                        - @activities[0][:spend_resources].each do |rs|
+                          = rs.last.select{|r| r > 0}.map{|r| '%s %s' % [r, @game.map_resource(rs.first)]}.join(' / ')
+
+            - if @activities[0][:spend_type] != :none
+              td valign="center"
+                img src=("../assets/convert%sx.png" % @activities[0][:max_count]) alt=("%s times" % [@activities[0][:max_count] == 0 ? "unlimited" : @activities[0][:max_count]]) title=("%s times" % [@activities[0][:max_count] == 0 ? "unlimited" : @activities[0][:max_count]])
+            - @activities[0][:gains].each do |gain|
+              td
+                - case gain[:gain_type]
+                - when :exact
+                  table width="100%"
+                    - gain[:gain_resources].each do |gain_res|
+                      tr
+                        td
+                          - if @activities[0][:spend_type] == :none
+                            |+
+                            =' gain_res.last
+                          - elsif gain[:gain_resources].any?{|x| x.last > 1 } || gain_res.last < 1
+                            =' gain_res.last
+                          = @game.map_resource(gain_res.first)
+                - when :choice
+                  table width="100%"
+                    tr
+                      td id=("tdResourceGain_%s" % @activities[0][:gains].index(gain)) valign="top" style="text-align: left;"
+                        - gain[:gain_resources].each do |rs|
+                          = radio_button_tag ("game[resource_gain_%s][]" % @activities[0][:gains].index(gain)), rs.first, false, { :onclick => "selectResourceGain(this, %s, %s, true);" % [rs.first, @activities[0][:gains].length] }
+                          - if @activities[0][:spend_type] == :none
+                            |+
+                          =' rs.last
+                          = @game.map_resource(rs.first)
+                          br
+                - when :victory_points
+                  table width="100%"
+                    - gain[:gain_resources].each do |gain_res|
+                      tr
+                        td
+                          =' gain_res.last
+                          = @game.map_resource(gain_res.first)
+                - when :steps
+                  table width="100%"
+                    tr
+                      td style="text-align: left;"
+                        - gain[:gain_resources].each do |rg|
+                          = rg.last.select{|r| r > 0}.map{|r| '%s %s' % [r, @game.map_resource(rg.first)]}.join(' / ')
+                - when :special
+                  table width="100%"
+                    - gain[:gain_special].each do |special|
+                      tr
+                        td
+                          = special
+          - if @activities[0][:spend_type] == :exact || @activities[0][:spend_type] == :exact_fuel || @activities[0][:spend_type] == :fuel_food
+            tr
+              td
+              td
+                = select_tag "game[action_building_action_0]", options_for_select(@activities[0][:max_convert].step(0,-1)), { :onchange => "selectGainCount(this, 0, '%s', '%s');" % [@activities[0][:spend_resources].map{|sr| '%s:%s' % sr}.join(','), @activities[0][:gains].map{|rg| rg[:gain_resources].map{|gr| '%s:%s' % gr}.join(',')}.join(',')] }
+              td
+          - if @activities[0][:spend_type] == :unique
+            ' Selected:
+            span.invalid id="resource_spend_checked_count"
+              '0
+          - elsif @activities[0][:spend_type] == :fuel_food
+            |Choose resources to spend:
+
+    - if @activities[:spend_fuels] || @activities[:spend_foods] || @activities[:spend_vps]
+      td rowspan=3 style="width: 40px;"
+      td rowspan=3
+        table
+          tr valign="top"
+            - if @activities[:spend_fuels]
+              td
+                table.resources id="tbl_game_resource_spend_fuel" border=0 style="border-collapse: collapse;"
+                  thead
+                    tr
+                      th colspan="4" Fuels
+                  tbody
+                    - @activities[:spend_fuels].each do |rs|
+                      tr
+                        td
+                          =' @game.map_resource(rs.first)
+                          |(
+                          b = @current_seat.get_resource(rs.first)
+                          - if rs.first == Resource::STRAW
+                            |+
+                            b = @current_seat.get_resource(Resource::GRAIN)
+                          |)
+                        td width="16"
+                          img id=("game_resource_spend_%s_down" % rs.first) src="../assets/arrow_left.png" style="cursor: pointer; display: none;" onclick=("spend_down(game_resource_spend_%s);" % rs.first)
+                        td
+                          input type="text" id=("game_resource_spend_%s" % rs.first) name=("game[resource_spend_%s]" % rs.first) value="0" size="2" style="text-align: right;" onchange=("spend_update(this, %s);" % rs.last)
+                        td width="16"
+                          img id=("game_resource_spend_%s_up" % rs.first) src="../assets/arrow_right.png" style="cursor: pointer;" onclick=("spend_up(game_resource_spend_%s, %s);" % rs)
+            - if @activities[:spend_fuels] && @activities[:spend_foods]
+              td width="35px"
+            - if @activities[:spend_foods]
+              td
+                table.resources id="tbl_game_resource_spend_food" border=0 style="border-collapse: collapse;"
+                  thead
+                    tr
+                      th colspan="4" Foods
+                  tbody
+                    - @activities[:spend_foods].each do |rs|
+                      tr
+                        td
+                          =' @game.map_resource(rs.first)
+                          |(
+                          b = @current_seat.get_resource(rs.first)
+                          |)
+                        td width="16"
+                          img id=("game_resource_spend_%s_down" % rs.first) src="../assets/arrow_left.png" style="cursor: pointer; display: none;" onclick=("spend_down(game_resource_spend_%s);" % rs.first)
+                        td
+                          input type="text" id=("game_resource_spend_%s" % rs.first) name=("game[resource_spend_%s]" % rs.first) value="0" size="2" style="text-align: right;" onchange=("spend_update(this, %s);" % rs.last)
+                        td width="16"
+                          img id=("game_resource_spend_%s_up" % rs.first) src="../assets/arrow_right.png" style="cursor: pointer;" onclick=("spend_up(game_resource_spend_%s, %s);" % rs)
+            - if (@activities[:spend_fuels] || @activities[:spend_foods]) && @activities[:spend_vps]
+              td width="35px"
+            - if @activities[:spend_vps]
+              td
+                table.resources id="tbl_game_resource_spend_vps" border="0" style="border-collapse: collapse;"
+                  thead
+                    tr
+                      th colspan="4" VPs
+                  tbody
+                    - @activities[:spend_vps].each do |rs|
+                      tr
+                        td
+                          =' @game.map_resource(rs.first)
+                          |(
+                          b = @current_seat.get_resource(rs.first)
+                          |)
+                        td width="16"
+                          img id=("game_resource_spend_%s_down" % rs.first) src="../assets/arrow_left.png" style="cursor: pointer; display: none;" onclick=("spend_down(game_resource_spend_%s);" % rs.first)
+                        td
+                          input type="text" id=("game_resource_spend_%s" % rs.first) name=("game[resource_spend_%s]" % rs.first) value="0" size="2" style="text-align: right;" onchange=("spend_update(this, %s);" % rs.last)
+                        td width="16"
+                          img id=("game_resource_spend_%s_up" % rs.first) src="../assets/arrow_right.png" style="cursor: pointer;" onclick=("spend_up(game_resource_spend_%s, %s);" % rs)
+          - if @resource_needed.length > 0
+            tr
+              td
+                - if @resource_needed[:fuel]
+                  |Fuel needed: 
+                  span id="resource_spend_fuel_needed" style="font-weight: bold;"
+                    = @resource_needed[:fuel]
+                  |&nbsp;Spent: 
+                  span.invalid id="resource_spend_fuel_count"
+                    '0
+              td
+              - if @resource_needed[:food]
+                td
+                  |Food needed: 
+                  span id="resource_spend_food_needed" style="font-weight: bold;"
+                    = @resource_needed[:food]
+                  |&nbsp;Spent: 
+                  span.invalid id="resource_spend_food_count"
+                    '0
+          - else
+            tr
+              td colspan="3"
+                - (0..1).each do |i|
+                  - if @activities[i][:spend_resources]
+                    - if @activities[i][:spend_resources][Resource::FUEL]
+                      - case @activities[i][:spend_type]
+                      - when :fuel_steps
+                        input type="hidden" id=("resource_spend_%s_%s" % [i, Resource::FUEL]) value=@activities[i][:spend_resources][Resource::FUEL][0]
+                      - else
+                        input type="hidden" id=("resource_spend_%s_%s" % [i, Resource::FUEL]) value=('%s' % @activities[i][:max_convert] * @activities[i][:spend_resources][Resource::FUEL])
+                    - if @activities[i][:spend_resources][Resource::FOOD]
+                      input type="hidden" id=("resource_spend_%s_%s" % [i, Resource::FOOD]) value=('%s' % @activities[i][:max_convert] * @activities[i][:spend_resources][Resource::FOOD])
+                    - if @activities[i][:spend_resources][Resource::VP]
+                      input type="hidden" id=("resource_spend_%s_%s" % [i, Resource::VP]) value=('%s' % @activities[i][:max_convert] * @activities[i][:spend_resources][Resource::VP])
+                table.resources width="100%"
+                  thead
+                    tr
+                      - if @activities[0][:spend_type] != :fuel_steps
+                        th colspan=((@activities[0][:spend_resources].merge(@activities[1][:spend_resources] || {})[Resource::FUEL] ? 1 : 0) + (@activities[0][:spend_resources].merge(@activities[1][:spend_resources] || {})[Resource::FOOD] ? 1 : 0)) Needed
+                      th colspan=((@activities[0][:spend_resources].merge(@activities[1][:spend_resources] || {})[Resource::FUEL] ? 1 : 0) + (@activities[0][:spend_resources].merge(@activities[1][:spend_resources] || {})[Resource::FOOD] ? 1 : 0)) Spending
+                      th width="20px" &nbsp;
+                      th colspan=((@activities[0][:gains] + (@activities[1][:gains] || [])).map{|x| x[:gain_resources].length}.reduce(:+)) Gaining
+                    tr
+                      - if @activities[0][:spend_type] != :fuel_steps
+                        - if @activities[0][:spend_resources].merge(@activities[1][:spend_resources] || {})[Resource::FUEL]
+                          th Fuel
+                        - if @activities[0][:spend_resources].merge(@activities[1][:spend_resources] || {})[Resource::FOOD]
+                          th Food
+                        - if @activities[0][:spend_resources].merge(@activities[1][:spend_resources] || {})[Resource::VP]
+                          th VP
+                      - if @activities[0][:spend_resources].merge(@activities[1][:spend_resources] || {})[Resource::FUEL]
+                        th Fuel
+                      - if @activities[0][:spend_resources].merge(@activities[1][:spend_resources] || {})[Resource::FOOD]
+                        th Food
+                      - if @activities[0][:spend_resources].merge(@activities[1][:spend_resources] || {})[Resource::VP]
+                        th VP
+                      th
+                      - (0..1).each do |i|
+                        - (@activities[i][:gains] || []).each do |gain|
+                          th
+                            - case gain[:gain_type]
+                            - when :exact, :steps
+                              - gain[:gain_resources].each do |gain_res|
+                                = @game.map_resource(gain_res.first)
+                  tbody
+                    tr
+                      - if @activities[0][:spend_type] != :fuel_steps
+                        - if @activities[:spend_fuels]
+                          td.textright
+                            span id=("resource_spend_%s_needed" % Resource::FUEL)
+                              = @activities[0][:max_convert] * @activities[0][:spend_resources][Resource::FUEL] + (@activities[1][:max_convert] || 0) * ((@activities[1][:spend_resources] || {})[Resource::FUEL] || 0)
+                        - if @activities[:spend_foods]
+                          td.textright
+                            span id=("resource_spend_%s_needed" % Resource::FOOD)
+                              = @activities[0][:max_convert] * @activities[0][:spend_resources][Resource::FOOD] + (@activities[1][:max_convert] || 0) * ((@activities[1][:spend_resources] || {})[Resource::FOOD] || 0)
+                        - if @activities[:spend_vps]
+                          td.textright
+                            span id=("resource_spend_%s_needed" % Resource::VP)
+                              = @activities[0][:max_convert] * @activities[0][:spend_resources][Resource::VP] + (@activities[1][:max_convert] || 0) * ((@activities[1][:spend_resources] || {})[Resource::VP] || 0)
+                      - if @activities[0][:spend_resources].merge(@activities[1][:spend_resources] || {})[Resource::FUEL]
+                        td.textright
+                          span class=(@activities[0][:spend_type] != :fuel_steps ? "invalid" : "") id=("resource_spend_%s_count" % Resource::FUEL)
+                            '0
+                      - if @activities[0][:spend_resources].merge(@activities[1][:spend_resources] || {})[Resource::FOOD]
+                        td.textright
+                          span class=(@activities[0][:spend_type] != :fuel_steps ? "invalid" : "") id=("resource_spend_%s_count" % Resource::FOOD)
+                            '0
+                      - if @activities[0][:spend_resources].merge(@activities[1][:spend_resources] || {})[Resource::VP]
+                        td.textright
+                          span class=(@activities[0][:spend_type] != :fuel_steps ? "invalid" : "") id=("resource_spend_%s_count" % Resource::VP)
+                            '0
+                      td
+                      - (0..1).each do |i|
+                        - (@activities[i][:gains] || []).each do |gain|
+                          - if gain[:gain_type] == :steps
+                            input type="hidden" id="resource_gain_steps" value=(gain[:gain_resources].map{|rg| '%s:%s' % [rg.first, 0.step(rg.last.length-1).map{|j| '%s=%s' % [@activities[0][:spend_resources].map{|sr| '%s>%s' % [sr.first, sr.last[j]]}.join(','), rg.last[j]]}.join(';')]}.join('|'))
+                          - gain[:gain_resources].each do |rg|
+                            td.textright
+                              - case gain[:gain_type]
+                              - when :steps
+                                span id=("resource_gain_%s_%s" % [i, rg.first])
+                                  = rg.last[0]
+                              - else
+                                span id=("resource_gain_%s_%s" % [i, rg.first])
+                                  = @activities[i][:max_convert] * rg.last
+
+  - if @activities[:joiner]
+    tr
+      td style="text-align: center;"
+        - case @activities[:joiner]
+        - when :and
+          | additionally:
+        - when :and_or
+          | and / or
+        - when :andthen_or
+          | and then / or
+
+  - if @activities[1].length > 0
+    tr
+      td style="text-align: center; border: 1px solid black;"
+        table width="100%"
+          tr
+            td
+              table
+                - @activities[1][:spend_resources].each do |spend_res|
+                  tr
+                    td
+                      - if @activities[1][:spend_resources].any?{|x| x.last != 1 } || @activities[1][:gains].map{|gain| gain[:gain_resources].count{|x| x.last != 1 }}.reduce(:+) > 0
+                        =' spend_res.last
+                      = @game.map_resource(spend_res.first)
+            td valign="center"
+              img src=("../assets/convert%sx.png" % @activities[1][:max_count]) alt=("%s times" % [@activities[1][:max_count] == 0 ? "unlimited" : @activities[1][:max_count]]) title=("%s times" % [@activities[1][:max_count] == 0 ? "unlimited" : @activities[1][:max_count]])
+            - @activities[1][:gains].each do |gain|
+              td
+                - case gain[:gain_type]
+                - when :exact
+                  table
+                    - gain[:gain_resources].each do |gain_res|
+                      tr
+                        td
+                          - if @activities[1][:spend_type] == :none
+                            |+
+                            =' gain_res.last
+                          - elsif @activities[1][:spend_resources].any?{|x| x.last != 1 } || gain[:gain_resources].any?{|x| x.last != 1 }
+                            =' gain_res.last
+                          = @game.map_resource(gain_res.first)
+                - when :fuel_food
+                  table
+                    - gain[:gain_resources].each do |gain_res|
+                      tr
+                        td
+                          - if @activities[1][:spend_type] == :none
+                            |+
+                            =' gain_res.last
+                          - elsif @activities[1][:spend_resources].any?{|x| x.last != 1 } || gain[:gain_resources].any?{|x| x.last != 1 }
+                            =' gain_res.last
+                          = @game.map_resource(gain_res.first)
+                - when :choice
+                  table
+                    tr
+                      td id=("tdResourceGain_%s" % @activities[1][:gains].index(gain)) valign="top" style="text-align: left;"
+                        - gain[:gain_resources].each do |rs|
+                          = radio_button_tag ("game[resource_gain_%s][]" % @activities[1][:gains].index(gain)), rs.first, false, { :onclick => "selectResourceGain(this, %s, %s, true);" % [rs.first, @activities[1][:gains].length] }
+                          - if @activities[1][:spend_type] == :none
+                            |+
+                          =' rs.last
+                          = @game.map_resource(rs.first)
+                          br
+          - if @activities[1][:spend_type] == :exact || @activities[1][:spend_type] == :exact_fuel
+            tr
+              td
+              td
+                = select_tag "game[action_building_action_1]", options_for_select(@activities[1][:max_convert].step(0,-1)), { :onchange => "selectGainCount(this, 1, '%s', '%s');" % [@activities[1][:spend_resources].map{|sr| '%s:%s' % sr}.join(','), @activities[1][:gains].map{|rg| rg[:gain_resources].map{|gr| '%s:%s' % gr}.join(',')}.join(',')] }
+              td
+          - if @activities[1][:spend_type] == :unique
+            ' Selected:
+            span.invalid id="resource_spend_checked_count"
+              '0
+
+- if @activities[1][:spend_type] && @activities[1][:spend_type] != :exact_fuel
+  input type="hidden" id="resource_gain_steps_1" value=(@activities[1][:gains][0][:gain_resources].map{|gr| '%s:%s' % [gr.first, 0.step(@activities[1][:max_convert]).map{|i| '%s=%s' % [@activities[1][:spend_resources].map{|sr| '%s|%s' % [sr.first, sr.last*i]}.join('/'), i*gr.last]}.join(',')]}.join(';'))
+
+
+
+= @activities

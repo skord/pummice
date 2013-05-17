@@ -1,0 +1,264 @@
+div
+  h2 =' seat.user.fullname
+  table
+    tr
+      td valign="top"
+        table.resources
+          thead
+            tr
+              th colspan=(@game.variant == GameVariant::FRANCE ? 11 : 10)
+                |Available resources
+          tbody
+            tr
+              td
+                'Peat:
+                b = seat.res_peat
+              td
+                'Livestock:
+                b = seat.res_livestock
+              td
+                'Grain:
+                b = seat.res_grain
+              td
+                'Wood:
+                b = seat.res_wood
+              td
+                'Clay:
+                b = seat.res_clay
+              td
+                'Coin:
+                b = seat.res_coin
+              td
+                '5 Coins:
+                b = seat.res_5coin
+              td
+                'Stone:
+                b = seat.res_stone
+              - if @game.variant == GameVariant::FRANCE
+                td
+                  'Grapes:
+                  b = seat.res_grapes
+                td
+                  'Flour:
+                  b = seat.res_flour
+              - if @game.variant == GameVariant::IRELAND
+                td
+                  'Malt:
+                  b = seat.res_malt
+              td
+                'Wonder:
+                b = seat.res_wonder
+            tr
+              td
+                'Peatcoal:
+                b = seat.res_peatcoal
+              td
+                'Meat:
+                b = seat.res_meat
+              td
+                'Straw:
+                b = seat.res_straw
+              td
+                - if @game.variant == GameVariant::IRELAND
+                  'Whiskey:
+                  b = seat.res_whiskey
+              td
+                'Ceramic:
+                b = seat.res_ceramic
+              td
+                'Book:
+                b = seat.res_book
+              td
+                'Reliquery:
+                b = seat.res_reliquery
+              td
+                'Ornament:
+                b = seat.res_ornament
+              - if @game.variant == GameVariant::FRANCE
+                td
+                  'Wine:
+                  b = seat.res_wine
+                td
+                  'Bread:
+                  b = seat.res_bread
+              - if @game.variant == GameVariant::IRELAND
+                td
+                  'Beer:
+                  b = seat.res_beer
+              td
+        table.settlements
+          thead
+            tr
+              th Available Settlements
+              th Locations
+              th EV
+              th DV
+              th Age
+              th Fuel
+              th Food
+              th Code
+          tbody
+            - seat.settlements.compact.each do |s|
+              tr
+                td = s.name
+                td = s.map_available_location_types.map { |t| t }.join(", ")
+                td.textright = s.economic_value
+                td.textright = s.dwelling_value
+                td
+                  - case s.age
+                  - when Game::Age::START
+                    img src="../assets/age_start.png" alt=s.map_age title=s.map_age
+                  - else
+                    b = s.map_age
+                td.textright = s.cost_fuel
+                td.textright = s.cost_food
+                td = s.key
+      td valign="top"
+        table.score
+          thead
+            tr
+              th Item
+              th Score
+          tbody
+            - @scores[seat.number][:settlements].sort_by{|skv| skv.first}.each do |settlement|
+              tr
+                td
+                  =' settlement.first
+                  | - 
+                  = settlement.last.first.name
+                td.textright = settlement.last.map{|t| t.dwelling_value}.sum()
+            tr
+              td.subtotal Subtotal
+              td class="subtotal textright" = @scores[seat.number][:settlements].values.map{|v| v.map{|t| t.dwelling_value}.sum()}.sum()
+            tr
+              td Buildings
+              td.textright = @scores[seat.number][:buildings]
+            tr
+              td Goods
+              td.textright = @scores[seat.number][:goods]
+            tr
+              td.total Total
+              td class="total textright" = @scores[seat.number][:total]
+      td valign="top"
+        table.score
+          tbody
+            tr
+              td Foods
+              td.textright = seat.get_resource(Resource::FOOD)
+            tr
+              td Fuels
+              td.textright = seat.get_resource(Resource::FUEL)
+  br
+  table class=("board%s" % seat.number) id="tblBoard" cellspacing="0" cellpadding="0"
+    tr
+      td.plots valign="top"
+        - @display_grid[seat.number][0].each do |object|
+          - if object.is_a? Plot
+            table.plot style=("background-image: url(../assets/plot%s%s.png);" % [object.cost, object.side]) id=("tblPlot%s" % object.position_y)
+              tr
+                td.tile
+                  = render :partial => "tile", :locals => { :seat => seat, :object => object, :x_off => 0, :y_off => 0 }
+                td.tile
+                  = render :partial => "tile", :locals => { :seat => seat, :object => object, :x_off => 1, :y_off => 0 }
+              tr
+                td.tile
+                  = render :partial => "tile", :locals => { :seat => seat, :object => object, :x_off => 0, :y_off => 1 }
+                td.tile
+                  = render :partial => "tile", :locals => { :seat => seat, :object => object, :x_off => 1, :y_off => 1 }
+          - elsif !object
+            div.blank
+          - elsif object.is_a? Integer
+            - if object > 0
+              table.plot class="placeable" id=("tblNewPlot0%s" % object) style="border-top: dotted 1px red; border-bottom: dotted 1px red; border-left: dotted 4px red; border-right: dotted 4px red; height: 150px; cursor: pointer;" onclick=("javascript: selectPlot(this, %s, 98, %s);" % [@landscape.cost, object])
+                tr
+                  td.tile
+                  td.tile
+            - else
+              table.plot class="placeable" id=("tblNewPlot0%s" % -object) style="height: 150px;" 
+                tr
+                  td.tile
+                  td.tile
+      td.districts valign="top"
+        - @display_grid[seat.number][1].each do |object|
+          - if object.is_a? District
+              table.district style=("background-image: url(../assets/district%s%s.png);" % [object.cost, object.side]) id=("tblDistrict%s" % object.position_y)
+                tr
+                  td.tile
+                    = render :partial => "tile", :locals => { :seat => seat, :object => object, :x_off => 0, :y_off => 0 }
+                  td.tile
+                    = render :partial => "tile", :locals => { :seat => seat, :object => object, :x_off => 1, :y_off => 0 }
+                  td.tile
+                    = render :partial => "tile", :locals => { :seat => seat, :object => object, :x_off => 2, :y_off => 0 }
+                  td.tile
+                    = render :partial => "tile", :locals => { :seat => seat, :object => object, :x_off => 3, :y_off => 0 }
+                  td.tile
+                    = render :partial => "tile", :locals => { :seat => seat, :object => object, :x_off => 4, :y_off => 0 }
+          - elsif object.is_a? Seat
+              table.heartland
+                tr
+                  td.tile
+                    = render :partial => "tile", :locals => { :seat => seat, :object => seat, :x_off => 0, :y_off => 0 }
+                  td.tile
+                    = render :partial => "tile", :locals => { :seat => seat, :object => seat, :x_off => 1, :y_off => 0 }
+                  td.tile
+                    = render :partial => "tile", :locals => { :seat => seat, :object => seat, :x_off => 2, :y_off => 0 }
+                  td.tile
+                    = render :partial => "tile", :locals => { :seat => seat, :object => seat, :x_off => 3, :y_off => 0 }
+                  td.tile
+                    = render :partial => "tile", :locals => { :seat => seat, :object => seat, :x_off => 4, :y_off => 0 }
+                tr
+                  td.tile
+                    = render :partial => "tile", :locals => { :seat => seat, :object => seat, :x_off => 0, :y_off => 1 }
+                  td.tile
+                    = render :partial => "tile", :locals => { :seat => seat, :object => seat, :x_off => 1, :y_off => 1 }
+                  td.tile
+                    = render :partial => "tile", :locals => { :seat => seat, :object => seat, :x_off => 2, :y_off => 1 }
+                  td.tile
+                    = render :partial => "tile", :locals => { :seat => seat, :object => seat, :x_off => 3, :y_off => 1 }
+                  td.tile
+                    = render :partial => "tile", :locals => { :seat => seat, :object => seat, :x_off => 4, :y_off => 1 }
+          - elsif object.is_a? Integer
+            - if object > 0
+              table.district id=("tblNewDistrict%s" % [object < seat.heartland_position_y ? "Top" : "Bottom"]) style="border: dotted 4px red; cursor: pointer;" onclick=("javascript: selectDistrict(this, %s, %s);" % [@landscape.cost, object])
+                tr
+                  td.tile
+                  td.tile
+                  td.tile
+                  td.tile
+                  td.tile
+          - elsif !object
+            div.blank
+      td.plots valign="top" style="width: 190px;"
+        - @display_grid[seat.number][2].each do |object|
+          - if object.is_a? Plot
+            table cellpadding="0" cellspacing="0"
+              tr
+                td
+                  table.plot style=("background-image: url(../assets/plot%s%s.png); background-position: left center; width: 95px;" % [object.cost, object.side]) id=("tblPlot%sa" % object.position_y)
+                    tr
+                      td.tile
+                        = render :partial => "tile", :locals => { :seat => seat, :object => object, :x_off => 0, :y_off => 0 }
+                    tr
+                      td.tile
+                        = render :partial => "tile", :locals => { :seat => seat, :object => object, :x_off => 0, :y_off => 1 }
+                td
+                  table.plot style=("background-image: url(../assets/plot%s%s.png); background-position: right center; width: 95px;" % [object.cost, object.side]) id=("tblPlot%sb" % object.position_y)
+                    tr style="height: 75px;"
+                    tr style="height: 150px;"
+                      td.tile
+                        = render :partial => "tile", :locals => { :seat => seat, :object => object, :x_off => 1, :y_off => 0 }
+                    tr style="height: 75px;"
+          - elsif !object
+            div.blank
+          - elsif object.is_a? Integer
+            - if object > 0
+              table.plot class="placeable" id=("tblNewPlot1%s" % object) style="border-top: dotted 1px red; border-bottom: dotted 1px red; border-left: dotted 4px red; border-right: dotted 4px red; height: 150px; cursor: pointer;" onclick=("javascript: selectPlot(this, %s, 105, %s);" % [@landscape.cost, object])
+                tr
+                  td.tile
+                  td.tile
+            - else
+              table.plot class="placeable" id=("tblNewPlot1%s" % -object) style="height: 150px;" 
+                tr
+                  td.tile
+                  td.tile
+  br

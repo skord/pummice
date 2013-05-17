@@ -544,7 +544,7 @@ if BuildingCard.count == 0
     cost_wood: 3, cost_clay: 0, cost_stone: 0, cost_straw: 1, cost_coin: 0, cost_fuel: 0, cost_food: 0, 
     economic_value: 7, dwelling_value: 5)
 
-  BuildingCard.create(name: "Guesthouse", variant: GameVariant::IRELAND, key: "F40", is_base: false, is_cloister: false, 
+  BuildingCard.create(name: "Guesthouse", variant: GameVariant::IRELAND, key: "I40", is_base: false, is_cloister: false, 
     age: Age::D, available_location_types: LocationType::COAST | LocationType::PLAINS | LocationType::HILLSIDE, 
     number_players: NumberOfPlayers::ONE | NumberOfPlayers::THREE | NumberOfPlayers::FOUR | NumberOfPlayers::TWO_LONG, 
     cost_wood: 3, cost_clay: 0, cost_stone: 0, cost_straw: 1, cost_coin: 0, cost_fuel: 0, cost_food: 0, 

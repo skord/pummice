@@ -11,6 +11,37 @@ $bluefg: #fff;
 $whitebg: #fff9e6;
 $whitefg: #000;
 
+div.actions
+{
+	font-size: 0.8em;
+}
+
+.textright {
+	text-align: right;
+}
+
+.invalid
+{
+	color: #C11;
+	font-weight: bold;
+}
+
+.warning
+{
+	color: #DA0;
+	font-weight: bold;
+}
+
+.valid
+{
+	color: #1C1;
+	font-weight: bold;
+}
+
+/*select option[value="0"]{
+    background: black;
+    color: white;
+}*/
 table.game
 {
 	border-collapse:collapse;
@@ -31,6 +62,10 @@ table.game
 		background-position: center;
 		background-repeat: no-repeat;
 		background-image:url(age_start.png);
+	}
+	td.A, td.B, td.C, td.D, td.E
+	{
+		text-align: center;
 	}
 	th
 	{
@@ -56,9 +91,6 @@ table.game
 
 	img {
 		padding: 1px;
-	}
-	.textright {
-		text-align: right;
 	}
 	.no_border_right {
 		border-right: 0px;
@@ -299,7 +331,7 @@ table.resources
 	{
 		border: dotted 1px gray;
 		padding: 2px 4px;
-		vertical-align: top;
+		vertical-align: middle;
 	}
 	th
 	{
@@ -316,40 +348,612 @@ table.resources
 	}
 }
 
+table.settlements
+{
+	border-collapse:collapse;
+	font-size: 0.8em;
+	thead
+	{
+		border: solid 1px black;
+	}
+	tbody
+	{
+		border: solid 1px black;
+	}
+	td
+	{
+		border: solid 1px gray;
+		padding: 2px 4px;
+		vertical-align: top;
+	}
+	td.cloister
+	{
+		background-color: #EFD93F
+	}
+	td.noncloister
+	{
+		background-color: #F8F7DC
+	}
+	td.Start
+	{
+		background-position: center;
+		background-repeat: no-repeat;
+		background-image:url(age_start.png);
+	}
+	td.A, td.B, td.C, td.D
+	{
+		text-align: center;
+	}
+	th
+	{
+		border: solid 1px gray;
+		background-color: #9999CC
+	}
+	th.cloister
+	{
+		background-color: #EFD93F
+	}
+	th.noncloister
+	{
+		background-color: #F8F7DC
+	}
+	tr:nth-child(odd)
+	{
+		background-color: #ddd;
+	}
+	tr:nth-child(even)
+	{
+		background-color: #fff;
+	}
+	.textright {
+		text-align: right;
+	}
+}
+table.score
+{
+	border-collapse:collapse;
+	font-size: 0.8em;
+	thead
+	{
+		border: solid 1px black;
+	}
+	tbody
+	{
+		border: solid 1px black;
+	}
+	td
+	{
+		border: solid 1px gray;
+		padding: 2px 4px;
+		vertical-align: top;
+	}
+	td.subtotal
+	{
+		font-weight: bold;
+	}
+	td.total
+	{
+		font-weight: bold;
+		background-color: #8888DD
+	}
+	th
+	{
+		border: solid 1px gray;
+		background-color: #9999CC
+	}
+	tr:nth-child(odd)
+	{
+		background-color: #ddd;
+	}
+	tr:nth-child(even)
+	{
+		background-color: #fff;
+	}
+	.textright {
+		text-align: right;
+	}
+}
 table.board
 {
 	border: 0;
-	cellspacing: 0;
-	cellpadding: 0;
+
+	td.plots
+	{
+		width: 190px;
+
+		div.blank
+		{
+			background-repeat: no-repeat;
+			float: left;
+			width: 190px;
+			height: 150px;
+		}
+
+		table.placeable
+		{
+			background-color: #AAA;
+		}
+	}
+
+	td.districts
+	{
+		width: 475px;
+
+		div.blank
+		{
+			background-repeat: no-repeat;
+			float: left;
+			width: 475px;
+			height: 150px;
+		}
+	}
+}
+
+table.board1
+{
+	border: 3px solid $redbg;
+	@extend table.board
+}
+
+table.board2
+{
+	border: 3px solid $greenbg;
+	@extend table.board
+}
+
+table.board3
+{
+	border: 3px solid $bluebg;
+	@extend table.board
+}
+
+table.board4
+{
+	border: 3px solid #777;
+	@extend table.board
 }
 
 table.heartland
 {
-	border: 0;
-	cellspacing: 0;
-	cellpadding: 0;
+	border: 0px;
+	border-collapse: collapse;
 	background-image:url(heartland.png);
 	background-repeat: no-repeat;
+	background-position: center center;
 	width: 475px; height: 300px;
+	table-layout: fixed;
 	tr
 	{
-		height: 150px;
+		height: 146px;
 	}
 	td
 	{
-		width: 95px;
+		border: transparent solid 1px;
+		width: 91px;
 		background-repeat: no-repeat;
 		background-position: center;
+		float: left;
+		position: relative;
 	}
-	td.R01
+	div
 	{
-		background-image:url(r01.png);
-	}
-	td.R02
-	{
-		background-image:url(r02.png);
+		background-repeat: no-repeat;
+		float: left;
 	}
 }
+
+table.district
+{
+	border: 0px;
+	border-collapse: collapse;
+	background-repeat: no-repeat;
+	background-position: center center;
+	width: 475px; height: 150px;
+	table-layout: fixed;
+	tr
+	{
+    height: 146px;
+	}
+	td
+	{
+		border: transparent solid 1px;
+		width: 91px;
+		background-repeat: no-repeat;
+		background-position: center;
+		float: left;
+		position: relative;
+	}
+	div
+	{
+		background-repeat: no-repeat;
+		float: left;
+	}
+}
+table.plot
+{
+	border: 0px;
+	border-collapse: collapse;
+	background-repeat: no-repeat;
+	background-position: center center;
+	width: 190px; height: 300px;
+	table-layout: fixed;
+	tr
+	{
+    height: 146px;
+	}
+	td
+	{
+		border: transparent solid 1px;
+		width: 91px;
+		background-repeat: no-repeat;
+		background-position: center;
+		float: left;
+		position: relative;
+	}
+	div
+	{
+		background-repeat: no-repeat;
+		float: left;
+	}
+}
+div.laybrother
+{
+	position: absolute;
+	width: 32px;
+	height: 32px;
+	top: 36px;
+	left: 45px;
+}
+div.prior_1
+{
+	@extend div.laybrother;
+	left: 31px;
+	background-image: url(prior1.png);
+}
+div.clergy_1
+{
+	@extend div.laybrother;
+	background-image: url(laybrother1.png);
+}
+div.prior_2
+{
+	@extend div.laybrother;
+	top: 31px;
+	left: 38px;
+	background-image: url(prior2.png);
+}
+div.clergy_2
+{
+	@extend div.laybrother;
+	background-image: url(laybrother2.png);
+}
+div.prior_3
+{
+	@extend div.laybrother;
+	background-image: url(prior3.png);
+}
+div.clergy_3
+{
+	@extend div.laybrother;
+	background-image: url(laybrother3.png);
+}
+div.prior_4
+{
+	@extend div.laybrother;
+	top: 31px;
+	left: 52px;
+	background-image: url(prior4.png);
+}
+div.clergy_4
+{
+	@extend div.laybrother;
+	background-image: url(laybrother4.png);
+}
+div.removable:hover
+{
+	opacity: 0.5;
+	filter: alpha(opacity=50);
+}
+div.selectable
+{
+	position: absolute;
+	top: 1px;
+	left: 1px;
+	background-image: url(selectable.png);
+	background-position: center;
+	cursor: pointer;
+/*		opacity: 0.0;
+	filter: alpha(opacity=0); /* For IE8 and earlier */
+}
+div.selectable:hover
+{
+/*		opacity: 1.0;
+	filter: alpha(opacity=100); /* For IE8 and earlier */
+	background-image: url(select.png);
+}
+div.selected
+{
+	position: absolute;
+	top: 1px;
+	left: 1px;
+	background-image: url(selected.png);
+	background-position: center;
+	cursor: pointer;
+}
+div.fade75
+{
+	opacity: 0.75;
+	filter: alpha(opacity=75); /* For IE8 and earlier */
+}
+
+div.tile
+{
+	background-position: center;
+	width: 91px;
+	height: 146px;
+}
+td.halftile
+{
+	background-position: center;
+	width: 91px;
+	height: 73px;
+}
+div.R01
+{
+	@extend div.tile;
+	background-image: url(r01.png);
+}
+div.R02
+{
+	@extend div.tile;
+	background-image: url(r02.png);
+}
+div.S01
+{
+	@extend div.tile;
+	background-image: url(s01.png);
+}
+div.S02
+{
+	@extend div.tile;
+	background-image: url(s02.png);
+}
+div.S03
+{
+	@extend div.tile;
+	background-image: url(s03.png);
+}
+div.S04
+{
+	@extend div.tile;
+	background-image: url(s04.png);
+}
+div.S05
+{
+	@extend div.tile;
+	background-image: url(s05.png);
+}
+div.S06
+{
+	@extend div.tile;
+	background-image: url(s06.png);
+}
+div.S07
+{
+	@extend div.tile;
+	background-image: url(s07.png);
+}
+div.S08
+{
+	@extend div.tile;
+	background-image: url(s08.png);
+}
+div.G01
+{
+	@extend div.tile;
+	background-image: url(g01.png);
+}
+div.G02
+{
+	@extend div.tile;
+	background-image: url(g02.png);
+}
+div.I03
+{
+	@extend div.tile;
+	background-image: url(i03.png);
+}
+div.I04
+{
+	@extend div.tile;
+	background-image: url(i04.png);
+}
+div.I05
+{
+	@extend div.tile;
+	background-image: url(i05.png);
+}
+div.G06
+{
+	@extend div.tile;
+	background-image: url(g06.png);
+}
+div.G07
+{
+	@extend div.tile;
+	background-image: url(g07.png);
+}
+div.I08
+{
+	@extend div.tile;
+	background-image: url(i08.png);
+}
+div.I09
+{
+	@extend div.tile;
+	background-image: url(i09.png);
+}
+div.I10
+{
+	@extend div.tile;
+	background-image: url(i10.png);
+}
+div.I11
+{
+	@extend div.tile;
+	background-image: url(i11.png);
+}
+div.G12
+{
+	@extend div.tile;
+	background-image: url(g12.png);
+}
+div.G13
+{
+	@extend div.tile;
+	background-image: url(g13.png);
+}
+div.I14
+{
+	@extend div.tile;
+	background-image: url(i14.png);
+}
+div.I15
+{
+	@extend div.tile;
+	background-image: url(i15.png);
+}
+div.G16
+{
+	@extend div.tile;
+	background-image: url(g16.png);
+}
+div.I17
+{
+	@extend div.tile;
+	background-image: url(i17.png);
+}
+div.G18
+{
+	@extend div.tile;
+	background-image: url(g18.png);
+}
+div.G19
+{
+	@extend div.tile;
+	background-image: url(g19.png);
+}
+div.I20
+{
+	@extend div.tile;
+	background-image: url(i20.png);
+}
+div.I21
+{
+	@extend div.tile;
+	background-image: url(i21.png);
+}
+div.G22
+{
+	@extend div.tile;
+	background-image: url(g22.png);
+}
+div.I23
+{
+	@extend div.tile;
+	background-image: url(i23.png);
+}
+div.I24
+{
+	@extend div.tile;
+	background-image: url(i24.png);
+}
+div.I25
+{
+	@extend div.tile;
+	background-image: url(i25.png);
+}
+div.G26
+{
+	@extend div.tile;
+	background-image: url(g26.png);
+}
+div.I27
+{
+	@extend div.tile;
+	background-image: url(i27.png);
+}
+div.G28
+{
+	@extend div.tile;
+	background-image: url(g28.png);
+}
+div.I29
+{
+	@extend div.tile;
+	background-image: url(i29.png);
+}
+div.I30
+{
+	@extend div.tile;
+	background-image: url(i30.png);
+}
+div.I31
+{
+	@extend div.tile;
+	background-image: url(i31.png);
+}
+div.I32
+{
+	@extend div.tile;
+	background-image: url(i32.png);
+}
+div.I33
+{
+	@extend div.tile;
+	background-image: url(i33.png);
+}
+div.G34
+{
+	@extend div.tile;
+	background-image: url(g34.png);
+}
+div.I35
+{
+	@extend div.tile;
+	background-image: url(i35.png);
+}
+div.I36
+{
+	@extend div.tile;
+	background-image: url(i36.png);
+}
+div.I37
+{
+	@extend div.tile;
+	background-image: url(i37.png);
+}
+div.I38
+{
+	@extend div.tile;
+	background-image: url(i38.png);
+}
+div.G39
+{
+	@extend div.tile;
+	background-image: url(g39.png);
+}
+div.I40
+{
+	@extend div.tile;
+	background-image: url(i40.png);
+}
+div.G41
+{
+	@extend div.tile;
+	background-image: url(g41.png);
+}
+
 
 table.chatlog
 {

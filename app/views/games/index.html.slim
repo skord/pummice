@@ -8,7 +8,7 @@
 table.game
   thead
     tr
-      - if current_user.admin
+      - if current_user && current_user.admin
         th
           |@
       th
@@ -28,6 +28,8 @@ table.game
           |Turn
         th
           |Current Player
+        th
+          |Action
       - if params[:started] == 'n'
         th
           |Created at
@@ -37,7 +39,7 @@ table.game
           |Players
   tbody
     - @games.sort_by{|game| game.updated_at}.reverse.each do |game|
-      tr class=(game.round > 0 && game.find_seat_by_number(game.current_seat_number).user == current_user ? "my_turn" : "" )
+      tr class=(game.phase != Phase::ENDGAME && game.find_seat_by_number(game.current_seat_number) && game.find_seat_by_number(game.current_seat_number).user == current_user ? "my_turn" : "" )
         - if current_user.admin
           td
             img src="assets/delete.png" alt="Delete game" title="Delete game"
@@ -62,17 +64,23 @@ table.game
         - if params[:started] != 'n'
           td
             = game.updated_at.strftime('%Y-%m-%d %H:%M:%S')
-          td.textright
-            - if game.round > 0
+          td class=(game.phase != Phase::ENDGAME ? "textright" : "")
+            - if game.phase != Phase::ENDGAME
               = game.round
-          td class=(if game.round > 0 then game.map_age end)
+            - else
+              |End of game
+          td class=(game.map_age if game.round > 0)
+            b = game.map_age if game.age != Age::START
           td.textright
-            = game.turn
+            - if game.phase != Phase::ENDGAME
+              = game.turn
           td
-            - if game.round > 0
-              - @cs = game.seats.sort_by{|seat| seat.number}[game.turn % game.number_of_players - 1]
-              img src=("assets/seat_%s.png" % @cs.number)
-              = @cs.user.fullname
+            - if game.phase != Phase::ENDGAME
+              img src=("assets/seat_%s.png" % game.action_seat.number)
+              = game.action_seat.user.fullname
+          td
+            - if game.actioncode
+              = game.actioncode
         - if params[:started] == 'n'
           td
             = game.created_at.strftime('%Y-%m-%d %H:%M:%S')
@@ -85,4 +93,5 @@ table.game
 
 br
 
-= link_to "New Game", new_game_path
+- if current_user
+  = link_to "New Game", new_game_path

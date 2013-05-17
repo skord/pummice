@@ -1,0 +1,11 @@
+div[class=(object.tile(x_off, y_off).key if object.tile(x_off, y_off) != nil)]
+- if @select_tiles[seat.number].include?([object.position_x+x_off, object.position_y+y_off])
+  - if @building_card
+    div id=('dSBC%s_%s_%s' % [seat.number, object.position_x+x_off, object.position_y+y_off]) class=("%s selected fade75" % @building_card.key) style="display: none;"
+  div class="tile selected" id=('dSF%s_%s_%s' % [seat.number, object.position_x+x_off, object.position_y+y_off]) style="display: none;"
+  div class="tile selectable" onclick=("javascript: selectTile(this, %s, %s, %s, %s);" % [seat.number, object.position_x+x_off, object.position_y+y_off, @select_tile_count])
+- @game.seats.sort_by{|seat| seat.number}.each do |seat_prior|
+  - if seat_prior.prior_location_seat == seat && seat_prior.prior_location_x == object.position_x+x_off && seat_prior.prior_location_y == object.position_y+y_off
+    div[class=('prior_%s' % seat_prior.number) title="Prior"]
+- if (seat.clergy0_location_x == object.position_x+x_off && seat.clergy0_location_y == object.position_y+y_off) || (seat.clergy1_location_x == object.position_x+x_off && seat.clergy1_location_y == object.position_y+y_off)
+  div[class=('clergy_%s' % seat.number) title="Laybrother"]

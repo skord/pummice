@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130106184739) do
+ActiveRecord::Schema.define(:version => 20130511061632) do
 
   create_table "building_cards", :force => true do |t|
     t.string  "name"
@@ -99,7 +99,13 @@ ActiveRecord::Schema.define(:version => 20130106184739) do
     t.integer  "phase",                    :default => 0
     t.integer  "round",                    :default => 0
     t.integer  "turn",                     :default => 0
+    t.integer  "action_seat_id"
+    t.integer  "actioncode"
+    t.boolean  "landscape_purchased",      :default => false
+    t.integer  "actions_taken",            :default => 0
   end
+
+  add_index "games", ["action_seat_id"], :name => "index_games_on_action_seat_id"
 
   create_table "plots", :force => true do |t|
     t.integer "plotable_id"
@@ -150,13 +156,6 @@ ActiveRecord::Schema.define(:version => 20130106184739) do
     t.integer "res_malt",               :default => 0
     t.integer "res_beer",               :default => 0
     t.integer "res_wonder",             :default => 0
-    t.integer "prior_locationX",        :default => 0
-    t.integer "prior_locationY",        :default => 0
-    t.integer "prior_location_seat_id"
-    t.integer "clergy0_locationX",      :default => 0
-    t.integer "clergy0_locationY",      :default => 0
-    t.integer "clergy1_locationX",      :default => 0
-    t.integer "clergy1_locationY",      :default => 0
     t.integer "tile00_id"
     t.integer "tile10_id"
     t.integer "tile01_id"
@@ -187,6 +186,13 @@ ActiveRecord::Schema.define(:version => 20130106184739) do
     t.integer "settlement7_id"
     t.integer "heartland_position_x",   :default => 100
     t.integer "heartland_position_y",   :default => 100
+    t.integer "prior_location_x",       :default => 0
+    t.integer "prior_location_y",       :default => 0
+    t.integer "prior_location_seat_id"
+    t.integer "clergy0_location_x",     :default => 0
+    t.integer "clergy0_location_y",     :default => 0
+    t.integer "clergy1_location_x",     :default => 0
+    t.integer "clergy1_location_y",     :default => 0
   end
 
   add_index "seats", ["game_id", "user_id"], :name => "index_seats_on_game_id_and_user_id"
@@ -199,6 +205,16 @@ ActiveRecord::Schema.define(:version => 20130106184739) do
   add_index "seats", ["tile02_id", "tile12_id"], :name => "index_seats_on_tile02_id_and_tile12_id"
   add_index "seats", ["tile03_id", "tile13_id"], :name => "index_seats_on_tile03_id_and_tile13_id"
   add_index "seats", ["tile04_id", "tile14_id"], :name => "index_seats_on_tile04_id_and_tile14_id"
+
+  create_table "subturns", :force => true do |t|
+    t.integer  "game_id",    :null => false
+    t.integer  "seat_id",    :null => false
+    t.datetime "timestamp"
+    t.integer  "actioncode"
+    t.string   "parameters"
+  end
+
+  add_index "subturns", ["game_id", "seat_id"], :name => "index_subturns_on_game_id_and_seat_id"
 
   create_table "users", :force => true do |t|
     t.string   "email",                  :default => "",                           :null => false
